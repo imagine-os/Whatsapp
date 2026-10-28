@@ -1,0 +1,352 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Eight full dashboard style directions explored for Threadline. Signal orbit was picked."><meta property="og:type" content="website"><meta property="og:title" content="Threadline Directions"><meta property="og:description" content="Eight full dashboard style directions explored for Threadline. Signal orbit was picked."><meta property="og:url" content="https://imagine-os.github.io/Whatsapp/styles/"><meta property="og:image" content="https://imagine-os.github.io/Whatsapp/styles/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Threadline Directions"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Threadline Directions"><meta name="twitter:description" content="Eight full dashboard style directions explored for Threadline. Signal orbit was picked."><meta name="twitter:image" content="https://imagine-os.github.io/Whatsapp/styles/og.jpg"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%2325FF94'/%3E%3Cellipse cx='16' cy='16' rx='15' ry='6' fill='none' stroke='%23C8FF50' stroke-width='2' transform='rotate(-20 16 16)'/%3E%3C/svg%3E"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Threadline Directions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;700;800&family=Chakra+Petch:wght@400;500;600&family=Outfit:wght@300;400;600&family=Archivo+Black&family=Archivo:wght@500;700&family=Azeret+Mono:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&family=Instrument+Serif&display=swap">
+<style>
+/* Layout: a long style board. Each variant is a 1200x720 dashboard scaled into a frame, with notes beneath. */
+:root{--bg:#F4F4F1;--fg:#16171A;--muted:#6A6C70;--line:#DCDCD6;--card:#FFFFFF;--accent:#16171A;
+  --f-head:"Instrument Serif",Georgia,serif;--f-body:"Manrope",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111213;--fg:#EDEDE9;--muted:#9A9C9F;--line:#2A2B2E;--card:#18191B;--accent:#EDEDE9;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111213;--fg:#EDEDE9;--muted:#9A9C9F;--line:#2A2B2E;--card:#18191B;--accent:#EDEDE9;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body)}
+.page{max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px}
+.intro{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:end;margin-bottom:40px}
+.intro h1{font-family:var(--f-head);font-weight:400;font-size:clamp(40px,6vw,76px);line-height:.95;margin:0;letter-spacing:-.01em}
+.intro p{margin:0;color:var(--muted);font-size:15px;line-height:1.6;max-width:52ch}
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 48px}
+.jump a{font-size:13px;font-weight:600;text-decoration:none;color:var(--fg);border:1px solid var(--line);padding:7px 12px;border-radius:999px;background:var(--card)}
+.jump a:hover{border-color:var(--fg)}
+.v{margin-bottom:72px;scroll-margin-top:20px}
+.vh{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.vh .n{font-family:var(--f-head);font-size:44px;line-height:1;color:var(--muted)}
+.vh h2{font-family:var(--f-head);font-weight:400;font-size:clamp(28px,3.4vw,40px);margin:0;line-height:1}
+.vh .tags{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.vh .tags span{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:4px 9px;border-radius:999px}
+.frame{position:relative;width:100%;aspect-ratio:1200/720;border-radius:18px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.35),0 0 0 1px var(--line)}
+.screen{position:absolute;left:0;top:0;width:1200px;height:720px;transform-origin:0 0;transform:scale(var(--s,1));overflow:hidden}
+.notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:18px}
+.notes div{font-size:14px;line-height:1.55;color:var(--muted)}
+.notes b{display:block;color:var(--fg);font-size:13px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}
+.pick{margin-top:48px;padding:24px;border:1px solid var(--line);border-radius:18px;background:var(--card);font-size:15px;line-height:1.6}
+.pick b{font-family:var(--f-head);font-weight:400;font-size:26px;display:block;margin-bottom:4px}
+@media (max-width:760px){.intro{grid-template-columns:1fr}.notes{grid-template-columns:1fr}.vh .tags{margin-left:0}}
+
+/* ---------- shared mock helpers ---------- */
+.screen *{box-sizing:border-box}
+.row{display:flex}.col{display:flex;flex-direction:column}
+
+/* ---------- 01 Obsidian glass ---------- */
+.v1{background:radial-gradient(700px 400px at 78% 8%,rgba(124,58,237,.35),transparent 70%),radial-gradient(600px 380px at 10% 90%,rgba(0,229,255,.22),transparent 70%),#05070D;color:#E6F1FF;font-family:"Sora",sans-serif}
+.v1 .floor{position:absolute;left:-200px;right:-200px;bottom:-260px;height:520px;background:repeating-linear-gradient(90deg,rgba(0,229,255,.14) 0 1px,transparent 1px 60px),repeating-linear-gradient(0deg,rgba(0,229,255,.14) 0 1px,transparent 1px 60px);transform:perspective(500px) rotateX(64deg);mask-image:linear-gradient(transparent,#000 40%)}
+.v1 .glass{background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.02));border:1px solid rgba(160,220,255,.22);border-radius:20px;backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 30px 60px -30px rgba(0,0,0,.8)}
+.v1 .side{position:absolute;left:24px;top:24px;bottom:24px;width:64px;display:flex;flex-direction:column;align-items:center;gap:18px;padding-top:18px}
+.v1 .side i{width:30px;height:30px;border-radius:10px;border:1px solid rgba(0,229,255,.35)}
+.v1 .side i.on{background:#00E5FF;box-shadow:0 0 18px #00E5FF}
+.v1 .lbl{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#7DD3FC}
+.v1 .kpi{padding:14px 18px}
+.v1 .kpi b{display:block;font-weight:300;font-size:38px;line-height:1.1;text-shadow:0 0 22px rgba(0,229,255,.55)}
+.v1 .kpi small{font-size:12px;color:#8FA8C8}
+.v1 .tl-i{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid rgba(160,220,255,.1)}
+.v1 .av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;color:#05070D}
+.v1 .chip{font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border-radius:6px;border:1px solid currentColor}
+
+/* ---------- 02 Mission control ---------- */
+.v2{background:#101113;color:#D9D9D6;font-family:"IBM Plex Mono",monospace}
+.v2 .pane{background:#17181A;border:1px solid #2A2B2F;position:absolute}
+.v2 .pane::before,.v2 .pane::after{content:"";position:absolute;width:12px;height:12px;border:2px solid #FF8A00}
+.v2 .pane::before{left:-2px;top:-2px;border-right:0;border-bottom:0}
+.v2 .pane::after{right:-2px;bottom:-2px;border-left:0;border-top:0}
+.v2 h4{margin:0;font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:15px;letter-spacing:.2em;color:#FF8A00}
+.v2 .big{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:64px;line-height:.9;color:#F4F4F2}
+.v2 .iso{position:absolute;bottom:70px;width:70px}
+.v2 .iso .top{position:absolute;left:0;width:70px;height:70px;transform:translateY(-35px) rotateX(60deg) rotateZ(45deg);transform-origin:center}
+.v2 .face{position:absolute;bottom:0;width:50px}
+.v2 .hz{background:repeating-linear-gradient(-45deg,#FF8A00 0 12px,#101113 12px 24px)}
+.v2 table{border-collapse:collapse;width:100%;font-size:13px}
+.v2 td{padding:9px 6px;border-bottom:1px dashed #2A2B2F;vertical-align:top}
+.v2 .k{font-weight:500;letter-spacing:.06em}
+
+/* ---------- 03 Pearl spatial ---------- */
+.v3{background:radial-gradient(800px 500px at 20% 0%,#FFFFFF,transparent 70%),linear-gradient(160deg,#EDF0F6,#DCE3EE);color:#1B2232;font-family:"Manrope",sans-serif}
+.v3 .stage{position:absolute;inset:0;perspective:1400px}
+.v3 .tile{position:absolute;background:rgba(255,255,255,.78);border-radius:28px;box-shadow:inset 0 1px 0 #fff,0 40px 60px -30px rgba(50,70,120,.38),0 2px 6px rgba(50,70,120,.08);backdrop-filter:blur(16px)}
+.v3 .holo{background:linear-gradient(135deg,#FFD6EC,#CFDCFF 35%,#CFFFF2 65%,#FFF3C9)}
+.v3 .lbl{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6B7590}
+.v3 .ring{width:190px;height:190px;border-radius:50%;background:conic-gradient(#7AA2FF 0 62%,#E3E8F2 62% 100%);display:grid;place-items:center;box-shadow:0 20px 40px -20px rgba(80,100,180,.6)}
+.v3 .ring div{width:150px;height:150px;border-radius:50%;background:#F7F9FC;display:grid;place-items:center;text-align:center;box-shadow:inset 0 4px 10px rgba(50,70,120,.1)}
+.v3 .bub{display:flex;gap:12px;align-items:flex-start;padding:10px 0}
+.v3 .orb{width:36px;height:36px;border-radius:50%;flex:none;box-shadow:0 8px 16px -6px rgba(60,80,150,.5),inset 0 2px 3px rgba(255,255,255,.8)}
+
+/* ---------- 04 Signal orbit ---------- */
+.v4{background:radial-gradient(600px 420px at 50% 62%,rgba(37,255,148,.12),transparent 70%),#020D09;color:#DFFFEF;font-family:"Chakra Petch",sans-serif}
+.v4 .rings{position:absolute;left:600px;top:430px;transform-style:preserve-3d}
+.v4 .rg{position:absolute;border-radius:50%;border:1px solid rgba(37,255,148,.35);transform:translate(-50%,-50%) rotateX(72deg)}
+.v4 .lbl{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#25FF94}
+.v4 .pl{position:absolute;border-radius:50%;display:grid;place-items:center;font-weight:600;color:#02140C;transform:translate(-50%,-50%)}
+.v4 .panel{position:absolute;border:1px solid rgba(37,255,148,.25);background:rgba(5,30,20,.6);border-radius:4px;padding:16px}
+
+/* ---------- 05 Aurora liquid ---------- */
+.v5{background:#0A0B16;color:#F2F0FF;font-family:"Outfit",sans-serif}
+.v5 .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.75}
+.v5 .lq{position:absolute;border-radius:30px;background:linear-gradient(150deg,rgba(255,255,255,.14),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(24px) saturate(140%);box-shadow:inset 0 1px 1px rgba(255,255,255,.35),inset 0 -12px 24px rgba(255,255,255,.03),0 30px 60px -30px rgba(0,0,0,.6)}
+.v5 .lbl{font-size:13px;color:#B9B4D8}
+.v5 .pillk{display:inline-flex;gap:6px;align-items:center;font-size:12px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.1)}
+
+/* ---------- 06 Neo-brutal extrude ---------- */
+.v6{background:#FFF1C9;color:#111;font-family:"Archivo",sans-serif}
+.v6 .bx{position:absolute;background:#fff;border:3px solid #111;border-radius:14px;box-shadow:8px 8px 0 #111}
+.v6 h4{margin:0;font-family:"Archivo Black",sans-serif;font-size:22px;letter-spacing:-.01em}
+.v6 .tag{display:inline-block;font-weight:700;font-size:12px;padding:3px 9px;border:2px solid #111;border-radius:999px}
+.v6 .bar{position:absolute;bottom:40px;width:74px;border:3px solid #111;border-radius:8px 8px 0 0;box-shadow:12px -8px 0 -3px #111}
+
+/* ---------- 07 Blueprint ---------- */
+.v7{background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 24px),repeating-linear-gradient(90deg,rgba(255,255,255,.06) 0 1px,transparent 1px 24px),repeating-linear-gradient(0deg,rgba(255,255,255,.12) 0 1px,transparent 1px 120px),repeating-linear-gradient(90deg,rgba(255,255,255,.12) 0 1px,transparent 1px 120px),#0B2C63;color:#EAF2FF;font-family:"Azeret Mono",monospace}
+.v7 .box{position:absolute;border:1px solid rgba(234,242,255,.7)}
+.v7 .lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#9CC2FF}
+.v7 .title{font-weight:600;font-size:13px;letter-spacing:.14em}
+
+/* ---------- 08 Noir atelier ---------- */
+.v8{background:radial-gradient(900px 500px at 70% -10%,#24201B,transparent 70%),#0D0C0B;color:#EEE6D8;font-family:"Jost",sans-serif}
+.v8 .card{position:absolute;border-radius:6px;background:linear-gradient(180deg,#1C1A17,#141311);box-shadow:inset 0 1px 0 rgba(255,240,210,.08),0 0 0 1px #2A2620,0 30px 50px -30px #000}
+.v8 .serif{font-family:"Cormorant Garamond",serif}
+.v8 .gold{color:#CBAA6B}
+.v8 .lbl{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#8E8574}
+.v8 .sw{width:86px;height:86px;border-radius:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 18px 24px -12px #000;transform:perspective(400px) rotateX(18deg)}
+</style>
+
+<div class="page">
+  <section class="intro">
+    <h1>Threadline,<br>eight ways</h1>
+    <p>Eight directions for the WhatsApp project dashboard. Every screen uses the same sample project (Reyes Villa living room: 36 messages, 5 people, 5 threads), so you're comparing style alone. Pick one, or name the parts to combine.</p>
+  </section>
+  <nav class="jump" id="jump"></nav>
+  <div id="variants"></div>
+  <div class="pick"><b>How to choose</b>Reply with a number, like “04”, or a mix, like “03 layout with 04's people orbit”. I'll build the full working app in that style, keeping import, threads, board, people, outputs and Claude analysis.</div>
+</div>
+
+<script>
+const TH=[["Concrete & Site",16],["Furniture",9],["Design",5],["Schedule",3],["Budget",3]];
+const PP=[["Daniel",11,"Lead"],["Maya",9,"Designer"],["Rafael",7,"Concrete"],["Kenji",6,"Furniture"],["Leo",6,"Site"]];
+const TL=[["Leo","risk","Hairline crack on the bench's back edge","09:12"],["Rafael","task","Fill crack before sealing, check Saturday","09:20"],["Daniel","request","Send a photo after filling for the client","10:05"],["Maya","decision","Client presentation moved to Monday 10am","10:40"],["Maya","task","Deck draft with render v3 by Friday","10:47"]];
+const ini=n=>n[0];
+
+const V=[
+{name:"Obsidian glass",tags:["Dark","Neon glass","Node graph"],
+notes:[["Feel","Command center at night. Glass panels float over a glowing grid floor."],["Hero","A live node graph: the project core, threads around it, people on the outer ring. Rotates with the mouse."],["Best for","Internal team use and a wow moment in demos."]],
+html:()=>{const cols=["#00E5FF","#C084FC","#FF4D8D","#7CFFB2","#FFD166"];
+const nodes=[[300,200,26],[150,110,18],[460,96,14],[500,270,11],[130,300,11],[320,352,11]];
+return `<div class="screen v1"><div class="floor"></div>
+<div class="side glass">${["on","","","",""].map(c=>`<i class="${c}"></i>`).join("")}</div>
+<div style="position:absolute;left:112px;top:30px;right:30px;display:flex;align-items:center;gap:16px">
+<div><div class="lbl">Project · live</div><div style="font-size:28px;font-weight:600;letter-spacing:-.01em">Reyes Villa <span style="font-weight:300;color:#8FA8C8">/ Living room</span></div></div>
+<div style="margin-left:auto;display:flex;gap:10px;align-items:center"><span style="width:8px;height:8px;border-radius:50%;background:#7CFFB2;box-shadow:0 0 10px #7CFFB2"></span><span style="font-size:13px;color:#8FA8C8">WhatsApp synced 2m ago</span><span class="glass" style="padding:9px 16px;border-radius:12px;font-size:13px;color:#00E5FF">Ask Claude</span></div></div>
+<div style="position:absolute;left:112px;top:104px;right:30px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px">
+${[["36","Messages · 72h"],["13","Open asks"],["4","Decisions"],["3","Risks"],["62%","Resolved"]].map(([b,s])=>`<div class="glass kpi"><b>${b}</b><small>${s}</small></div>`).join("")}</div>
+<div class="glass" style="position:absolute;left:112px;top:218px;width:640px;height:470px;transform:perspective(1400px) rotateY(6deg) rotateX(4deg);transform-origin:left center">
+<div style="padding:18px 22px" class="lbl">Thread graph</div>
+<svg width="640" height="420" viewBox="0 0 640 420" style="position:absolute;left:0;top:44px">
+<defs><filter id="gl"><feGaussianBlur stdDeviation="4"/></filter></defs>
+${nodes.slice(1).map((n,i)=>`<line x1="${nodes[0][0]}" y1="${nodes[0][1]}" x2="${n[0]}" y2="${n[1]}" stroke="${cols[i]}" stroke-width="2" opacity=".6"/>`).join("")}
+${PP.map((p,i)=>{const a=i/5*Math.PI*2+.4,x=310+Math.cos(a)*270,y=200+Math.sin(a)*170,t=nodes[1+i%5];return `<line x1="${x}" y1="${y}" x2="${t[0]}" y2="${t[1]}" stroke="#7DD3FC" stroke-dasharray="3 5" opacity=".35"/><circle cx="${x}" cy="${y}" r="16" fill="#0C1426" stroke="#7DD3FC"/><text x="${x}" y="${y+4}" fill="#E6F1FF" font-size="12" text-anchor="middle" font-family="Sora">${ini(p[0])}</text>`}).join("")}
+${nodes.map((n,i)=>`<circle cx="${n[0]}" cy="${n[1]}" r="${n[2]+8}" fill="${i?cols[i-1]:"#fff"}" opacity=".35" filter="url(#gl)"/><circle cx="${n[0]}" cy="${n[1]}" r="${n[2]}" fill="${i?cols[i-1]:"#E6F1FF"}"/>`).join("")}
+${TH.map((t,i)=>{const n=nodes[i+1];return `<text x="${n[0]}" y="${n[1]+n[2]+18}" fill="#CFE6FF" font-size="12" text-anchor="middle" font-family="Sora">${t[0]} · ${t[1]}</text>`}).join("")}
+<text x="300" y="205" fill="#05070D" font-size="11" text-anchor="middle" font-family="Sora" font-weight="600">CORE</text>
+</svg></div>
+<div class="glass" style="position:absolute;left:780px;top:218px;right:30px;height:470px;padding:18px 22px">
+<div class="lbl" style="margin-bottom:6px">Timeline · today</div>
+${TL.map(([n,k,t,h],i)=>{const c={risk:"#FF4D8D",task:"#FFD166",request:"#00E5FF",decision:"#7CFFB2"}[k];return `<div class="tl-i"><div class="av" style="background:${c};box-shadow:0 0 14px ${c}">${ini(n)}</div><div><div style="display:flex;gap:8px;align-items:center;font-size:13px"><b style="font-weight:600">${n}</b><span class="chip" style="color:${c}">${k}</span><span style="margin-left:auto;font-size:11px;color:#6E87A8">${h}</span></div><div style="font-size:13px;color:#B8CBE4;margin-top:3px">${t}</div></div></div>`}).join("")}
+</div></div>`}},
+
+{name:"Mission control",tags:["Graphite","Amber HUD","Isometric"],
+notes:[["Feel","A site operations console: dense, precise, no decoration that isn't data."],["Hero","Each thread is an isometric tower whose height is its message volume. Risks get a hazard strip."],["Best for","Project managers and site leads who scan many projects fast."]],
+html:()=>{const iso=(x,h,top,l,r,label,n)=>{const b=330,t=b-h;return `<svg style="position:absolute;left:${x}px;top:40px;overflow:visible" width="72" height="360"><polygon points="0,${t} 36,${t+21} 36,${b+21} 0,${b}" fill="${l}"/><polygon points="36,${t+21} 72,${t} 72,${b} 36,${b+21}" fill="${r}"/><polygon points="36,${t-21} 72,${t} 36,${t+21} 0,${t}" fill="${top}"/></svg>
+<div style="position:absolute;left:${x-10}px;width:92px;top:404px;text-align:center;font-size:11px;line-height:1.3;color:#9A9A96">${label}<br><span style="color:#F4F4F2;font-weight:500">${n} msg</span></div>`};
+return `<div class="screen v2">
+<div style="position:absolute;left:0;right:0;top:0;height:46px;border-bottom:1px solid #2A2B2F;display:flex;align-items:center;gap:28px;padding:0 24px;font-size:12px;letter-spacing:.12em">
+<span style="color:#FF8A00;font-family:'Barlow Condensed';font-weight:700;font-size:20px;letter-spacing:.18em">THREADLINE // OPS</span>
+<span>CH-04 REYES VILLA</span><span style="color:#9A9A96">LIVING ROOM</span>
+<span style="margin-left:auto"><span style="display:inline-block;width:8px;height:8px;background:#3CFF7A;margin-right:8px"></span>WA LINK OK</span><span style="color:#9A9A96">UTC+04 10:52:18</span></div>
+<div class="pane" style="left:24px;top:70px;width:250px;height:290px;padding:18px">
+<h4>OPEN ASKS</h4><div class="big" style="margin-top:12px">13</div><div style="font-size:12px;color:#9A9A96;margin-top:6px">▲ 4 since yesterday</div>
+<div style="margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+${[["DECIDED","04"],["RISKS","03"],["MSGS 72H","36"],["RESOLVED","62%"]].map(([a,b])=>`<div><div style="font-size:11px;color:#9A9A96;letter-spacing:.12em">${a}</div><div style="font-family:'Barlow Condensed';font-weight:600;font-size:30px;color:#F4F4F2">${b}</div></div>`).join("")}</div></div>
+<div class="pane" style="left:24px;top:384px;width:250px;height:312px;padding:18px">
+<h4>CREW</h4>${PP.map(([n,c,r])=>`<div style="display:flex;align-items:center;gap:10px;margin-top:14px;font-size:13px"><span style="width:84px">${n.toUpperCase()}</span><span style="flex:1;height:8px;background:#26272A"><span style="display:block;height:100%;width:${c/11*100}%;background:${n==="Leo"?"#E8E8E6":"#FF8A00"}"></span></span><span style="width:20px;text-align:right">${c}</span></div>`).join("")}</div>
+<div class="pane" style="left:298px;top:70px;width:520px;height:456px;padding:18px;overflow:hidden">
+<h4>THREAD VOLUME / ISO</h4>
+<div style="position:absolute;left:0;right:0;bottom:84px;height:1px;background:#2A2B2F"></div>
+${iso(30,224,"#FFB04D","#B35F00","#7A4100",TH[0][0].toUpperCase(),16)}
+${iso(126,130,"#FFC680","#A66300","#6E4200",TH[1][0].toUpperCase(),9)}
+${iso(222,76,"#E8E8E6","#8D8D8A","#5E5E5B",TH[2][0].toUpperCase(),5)}
+${iso(318,48,"#E8E8E6","#8D8D8A","#5E5E5B",TH[3][0].toUpperCase(),3)}
+${iso(414,48,"#E8E8E6","#8D8D8A","#5E5E5B",TH[4][0].toUpperCase(),3)}
+</div>
+<div class="pane" style="left:842px;top:70px;right:24px;height:626px;padding:18px">
+<h4>EVENT LOG</h4><table style="margin-top:10px">${TL.concat([["Kenji","risk","Fabric samples delayed to Thursday","11:15"],["Daniel","decision","Shift left leg 6cm inward","09:52"],["Maya","task","Rug quote by Thursday","15:30"]]).map(([n,k,t,h])=>`<tr><td style="color:#9A9A96;width:52px">${h}</td><td><span class="k" style="color:${k==="risk"?"#FF8A00":k==="decision"?"#3CFF7A":"#E8E8E6"}">${k.toUpperCase()}</span> · ${n.toUpperCase()}<div style="color:#BDBDB9;margin-top:3px">${t}</div></td></tr>`).join("")}</table></div>
+<div class="pane" style="left:298px;top:550px;width:520px;height:146px;padding:0;overflow:hidden">
+<div class="hz" style="height:14px"></div><div style="padding:14px 18px;display:flex;gap:20px;align-items:center">
+<div class="big" style="font-size:48px;color:#FF8A00">03</div><div style="font-size:13px;line-height:1.6">RISK · BENCH HAIRLINE CRACK<br>RISK · FABRIC SAMPLES DELAYED<br>RISK · DRAIN 4CM OFF DRAWING</div></div></div>
+</div>`}},
+
+{name:"Pearl spatial",tags:["Light","Iridescent","Depth layers"],
+notes:[["Feel","Calm, premium, spatial. Like a headset interface sitting on a pearl surface."],["Hero","A progress ring for resolved asks, with tiles floating at different depths that spread apart on hover."],["Best for","Showing clients. It looks expensive and is easy to read."]],
+html:()=>`<div class="screen v3"><div class="stage">
+<div style="position:absolute;left:40px;top:34px;right:40px;display:flex;align-items:center;gap:14px">
+<div style="width:40px;height:40px;border-radius:14px" class="holo"></div><div style="font-weight:800;font-size:20px">Threadline</div>
+<div style="margin:0 auto;display:flex;gap:6px;background:rgba(255,255,255,.6);padding:5px;border-radius:999px;box-shadow:inset 0 1px 2px rgba(50,70,120,.1)">${["Overview","Threads","Board","People"].map((t,i)=>`<span style="padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;${i?"color:#6B7590":"background:#fff;box-shadow:0 6px 14px -6px rgba(50,70,120,.35)"}">${t}</span>`).join("")}</div>
+<div style="display:flex">${PP.map((p,i)=>`<span class="orb" style="margin-left:-8px;width:34px;height:34px;display:grid;place-items:center;font-size:12px;font-weight:800;background:${["#FFD6EC","#CFDCFF","#CFFFF2","#FFF3C9","#E7D8FF"][i]};border:2px solid #fff">${ini(p[0])}</span>`).join("")}</div></div>
+<div class="tile" style="left:40px;top:110px;width:380px;height:574px;padding:28px;transform:translateZ(20px)">
+<div class="lbl">Reyes Villa · Living room</div><div style="font-size:34px;font-weight:800;line-height:1.1;margin:8px 0 22px;letter-spacing:-.02em">On track for Monday's client review</div>
+<div class="ring" style="margin:0 auto"><div><div><div style="font-size:44px;font-weight:800;letter-spacing:-.03em">62%</div><div style="font-size:12px;color:#6B7590;font-weight:700">asks resolved</div></div></div></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:28px;text-align:center">${[["36","messages"],["4","decisions"],["3","risks"]].map(([a,b])=>`<div style="background:#F3F6FB;border-radius:18px;padding:12px 4px"><div style="font-size:24px;font-weight:800">${a}</div><div style="font-size:12px;color:#6B7590">${b}</div></div>`).join("")}</div></div>
+<div class="tile holo" style="left:450px;top:110px;width:330px;height:190px;padding:24px;transform:translateZ(80px) rotateY(-4deg)">
+<div class="lbl" style="color:#4A5470">Claude summary</div><div style="font-size:17px;font-weight:700;line-height:1.45;margin-top:10px">Bench is curing with a small crack to fill. Chair order waits on fabric samples Thursday. Deck due Friday.</div></div>
+<div class="tile" style="left:450px;top:324px;width:330px;height:360px;padding:24px;transform:translateZ(40px)">
+<div class="lbl">Threads</div>
+${TH.map((t,i)=>`<div style="display:flex;align-items:center;gap:12px;margin-top:16px"><span class="orb" style="width:26px;height:26px;background:${["#7AA2FF","#C38BFF","#9FE8D6","#FFC7A8","#FFE08A"][i]}"></span><span style="font-weight:700;font-size:15px;flex:1">${t[0]}</span><span style="font-size:13px;color:#6B7590">${t[1]}</span></div><div style="margin:8px 0 0 38px;height:6px;border-radius:4px;background:#E6EBF3"><div style="height:100%;width:${t[1]/16*100}%;border-radius:4px;background:${["#7AA2FF","#C38BFF","#9FE8D6","#FFC7A8","#FFE08A"][i]}"></div></div>`).join("")}</div>
+<div class="tile" style="left:810px;top:110px;right:40px;height:574px;padding:24px;transform:translateZ(60px) rotateY(-6deg)">
+<div class="lbl">Today</div>
+${TL.map(([n,k,t,h],i)=>`<div class="bub"><span class="orb" style="background:${{risk:"#FFC7A8",task:"#FFE08A",request:"#CFDCFF",decision:"#9FE8D6"}[k]};display:grid;place-items:center;font-weight:800;font-size:13px">${ini(n)}</span><div style="flex:1;background:#F3F6FB;border-radius:4px 18px 18px 18px;padding:10px 14px"><div style="font-size:12px;font-weight:700;color:#6B7590">${n} · ${k} · ${h}</div><div style="font-size:14px;font-weight:600;margin-top:2px">${t}</div></div></div>`).join("")}</div>
+</div></div>`},
+
+{name:"Signal orbit",tags:["Deep green","Radar","People-first"],
+notes:[["Feel","Cinematic and alive. The chat is a signal you watch move."],["Hero","People orbit the project core on tilted rings, sized by how much they post. A pulse line shows activity over time."],["Best for","Seeing who's driving the project and who's gone quiet."]],
+html:()=>{const R=[[520,170],[400,130],[280,92]];
+const pos=[[0,0,64],[1,1.1,52],[1,3.6,44],[2,2.2,40],[0,4.2,40]];
+return `<div class="screen v4">
+<div style="position:absolute;left:36px;top:30px"><div class="lbl">Signal · Reyes Villa</div><div style="font-size:34px;font-weight:600;margin-top:4px">5 voices, 3 days</div></div>
+<div style="position:absolute;right:36px;top:30px;text-align:right"><div class="lbl">Activity</div><div style="font-size:34px;font-weight:600;margin-top:4px">+18% <span style="font-size:15px;color:#C8FF50">vs last week</span></div></div>
+<svg style="position:absolute;left:0;top:110px" width="1200" height="120" viewBox="0 0 1200 120"><defs><linearGradient id="sg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#25FF94" stop-opacity=".35"/><stop offset="1" stop-color="#25FF94" stop-opacity="0"/></linearGradient></defs>
+<path d="M0,90 C80,80 120,40 200,52 S330,96 400,70 S520,20 600,34 S720,92 800,60 S930,18 1000,40 S1120,70 1200,50 L1200,120 L0,120Z" fill="url(#sg)"/>
+<path d="M0,90 C80,80 120,40 200,52 S330,96 400,70 S520,20 600,34 S720,92 800,60 S930,18 1000,40 S1120,70 1200,50" fill="none" stroke="#C8FF50" stroke-width="2"/>
+${[200,600,1000].map((x,i)=>`<line x1="${x}" x2="${x}" y1="0" y2="120" stroke="rgba(37,255,148,.25)" stroke-dasharray="2 4"/><text x="${x+8}" y="14" fill="#25FF94" font-size="11" font-family="Chakra Petch">${["MON 27","TUE 28","WED 29"][i]}</text>`).join("")}</svg>
+<div class="rings">${R.map(([w,h])=>`<div class="rg" style="width:${w*2}px;height:${w*2}px"></div>`).join("")}</div>
+<div class="pl" style="left:600px;top:430px;width:92px;height:92px;background:radial-gradient(circle at 35% 30%,#B7FFD9,#25FF94 45%,#0A6B3E);box-shadow:0 0 60px #25FF94;font-size:13px;letter-spacing:.1em">CORE</div>
+${PP.map((p,i)=>{const [ri,a,s]=pos[i],[w,h]=R[ri];const x=600+Math.cos(a)*w*.98,y=430+Math.sin(a)*h*.98*(w/(w))*0.62*1.6/1.6;return `<div class="pl" style="left:${x}px;top:${430+Math.sin(a)*w*.31}px;width:${s}px;height:${s}px;background:radial-gradient(circle at 35% 30%,#F0FFF7,${i%2?"#C8FF50":"#25FF94"} 60%);box-shadow:0 0 24px ${i%2?"#C8FF50":"#25FF94"};font-size:${s/3.2}px">${ini(p[0])}</div><div style="position:absolute;left:${x}px;top:${430+Math.sin(a)*w*.31+s/2+8}px;transform:translateX(-50%);font-size:12px;letter-spacing:.12em;color:#9CFFC9;white-space:nowrap">${p[0].toUpperCase()} · ${p[1]}</div>`}).join("")}
+<div class="panel" style="left:36px;top:560px;width:330px;height:130px"><div class="lbl">Quiet alert</div><div style="font-size:17px;margin-top:8px;line-height:1.4">Kenji hasn't replied for 23h. 2 asks waiting on him.</div></div>
+<div class="panel" style="right:36px;top:560px;width:330px;height:130px"><div class="lbl">Strongest thread</div><div style="font-size:17px;margin-top:8px;line-height:1.4">Concrete & Site · 16 msgs, 2 risks, bench demould Saturday.</div></div>
+</div>`}},
+
+{name:"Aurora liquid",tags:["Dark","Liquid glass","Soft color"],
+notes:[["Feel","Soft and modern. Thick liquid-glass cards over slow-moving aurora light."],["Hero","A smooth activity wave across the week, with a thread donut and decisions in floating cards."],["Best for","Everyday use. It looks good for hours without tiring the eyes."]],
+html:()=>{const cols=["#5EEAD4","#F472B6","#FBBF24","#A78BFA","#60A5FA"];let acc=0;const donut=TH.map((t,i)=>{const a=acc/36*100;acc+=t[1];return `${cols[i]} ${a}% ${acc/36*100}%`}).join(",");
+return `<div class="screen v5">
+<div class="blob" style="left:-80px;top:-60px;width:520px;height:420px;background:#14B8A6"></div>
+<div class="blob" style="left:420px;top:280px;width:560px;height:440px;background:#DB2777;opacity:.55"></div>
+<div class="blob" style="right:-120px;top:-80px;width:520px;height:420px;background:#F59E0B;opacity:.45"></div>
+<div class="lq" style="left:28px;top:28px;bottom:28px;width:220px;padding:24px">
+<div style="font-weight:600;font-size:22px">threadline</div><div class="lbl" style="margin-top:2px">Reyes Villa</div>
+${["Overview","Threads","Board","People","Outputs"].map((t,i)=>`<div style="margin-top:${i?6:30}px;padding:11px 14px;border-radius:16px;font-size:15px;${i?"color:#B9B4D8":"background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)"}">${t}</div>`).join("")}
+<div style="position:absolute;left:20px;right:20px;bottom:20px;padding:16px;border-radius:20px;background:rgba(255,255,255,.08)"><div class="lbl">WhatsApp</div><div style="font-size:14px;margin-top:4px">Connected · 2m ago</div></div></div>
+<div class="lq" style="left:272px;top:28px;width:600px;height:360px;padding:26px">
+<div style="display:flex;align-items:baseline;gap:12px"><div style="font-size:15px;color:#B9B4D8">Messages this week</div><div style="margin-left:auto;font-size:44px;font-weight:300">36</div></div>
+<svg width="548" height="250" viewBox="0 0 548 250" style="margin-top:6px"><defs><linearGradient id="ag" x1="0" x2="1"><stop offset="0" stop-color="#5EEAD4"/><stop offset=".5" stop-color="#F472B6"/><stop offset="1" stop-color="#FBBF24"/></linearGradient><linearGradient id="af" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+<path d="M0,190 C60,170 90,80 160,90 S260,200 320,150 S420,40 470,70 S530,120 548,100 L548,250 L0,250Z" fill="url(#af)"/>
+<path d="M0,190 C60,170 90,80 160,90 S260,200 320,150 S420,40 470,70 S530,120 548,100" fill="none" stroke="url(#ag)" stroke-width="4" stroke-linecap="round"/>
+<circle cx="470" cy="70" r="8" fill="#fff"/><circle cx="470" cy="70" r="16" fill="#fff" opacity=".2"/>
+${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((d,i)=>`<text x="${i*88+6}" y="244" fill="#B9B4D8" font-size="12" font-family="Outfit">${d}</text>`).join("")}</svg></div>
+<div class="lq" style="left:896px;top:28px;right:28px;height:360px;padding:26px;text-align:center">
+<div style="font-size:15px;color:#B9B4D8;text-align:left">Threads</div>
+<div style="width:170px;height:170px;margin:20px auto 16px;border-radius:50%;background:conic-gradient(${donut});display:grid;place-items:center;box-shadow:0 20px 40px -20px #000"><div style="width:118px;height:118px;border-radius:50%;background:#1A1A2E;display:grid;place-items:center;font-size:30px;font-weight:300">5</div></div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${TH.map((t,i)=>`<span class="pillk"><i style="width:8px;height:8px;border-radius:50%;background:${cols[i]}"></i>${t[0]}</span>`).join("")}</div></div>
+<div class="lq" style="left:272px;top:412px;width:390px;bottom:28px;padding:24px">
+<div style="font-size:15px;color:#B9B4D8;margin-bottom:6px">Decided</div>
+${["Bench length 2.2m","Plaster wall in sand","Shift bench leg 6cm inward","Presentation Monday 10am"].map(t=>`<div style="display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:15px"><span style="width:22px;height:22px;border-radius:50%;background:rgba(94,234,212,.25);display:grid;place-items:center;color:#5EEAD4;font-size:13px">✓</span>${t}</div>`).join("")}</div>
+<div class="lq" style="left:686px;top:412px;right:28px;bottom:28px;padding:24px">
+<div style="font-size:15px;color:#B9B4D8;margin-bottom:6px">Needs attention</div>
+${TL.slice(0,3).map(([n,k,t])=>`<div style="padding:12px 14px;margin-top:8px;border-radius:18px;background:rgba(255,255,255,.07)"><span class="pillk" style="background:${k==="risk"?"rgba(244,114,182,.25)":"rgba(251,191,36,.22)"}">${k}</span> <span style="font-size:13px;color:#B9B4D8">${n}</span><div style="font-size:15px;margin-top:6px">${t}</div></div>`).join("")}</div>
+</div>`}},
+
+{name:"Neo-brutal blocks",tags:["Loud","Extruded 3D","Playful"],
+notes:[["Feel","Bold, friendly and confident. Thick outlines, hard shadows, chunky extruded shapes."],["Hero","3D block columns per thread and sticky-note asks you can drag between lanes."],["Best for","A studio brand with personality that stands out in a pitch."]],
+html:()=>{const c=["#C6FF3D","#FF5FA2","#4D7CFF","#FFD23D","#FF7A3D"];
+return `<div class="screen v6">
+<div style="position:absolute;left:32px;top:28px;display:flex;align-items:center;gap:14px"><div style="width:48px;height:48px;background:#FF5FA2;border:3px solid #111;border-radius:12px;box-shadow:5px 5px 0 #111"></div><h4 style="font-size:34px">THREADLINE</h4><span class="tag" style="background:#C6FF3D">REYES VILLA</span></div>
+<div style="position:absolute;right:32px;top:34px;display:flex;gap:12px"><span class="tag" style="padding:10px 18px;font-size:14px;background:#fff;box-shadow:4px 4px 0 #111">Import chat</span><span class="tag" style="padding:10px 18px;font-size:14px;background:#4D7CFF;color:#fff;box-shadow:4px 4px 0 #111">Ask Claude</span></div>
+<div class="bx" style="left:32px;top:110px;width:270px;height:270px;background:#C6FF3D;padding:22px"><div style="font-weight:700">OPEN ASKS</div><div style="font-family:'Archivo Black';font-size:120px;line-height:1">13</div><div style="font-weight:700">4 decided · 3 risks</div></div>
+<div class="bx" style="left:32px;top:410px;width:270px;height:278px;padding:22px"><h4>CREW</h4>${PP.map((p,i)=>`<div style="display:flex;align-items:center;gap:10px;margin-top:12px;font-weight:700"><span style="width:30px;height:30px;border:2px solid #111;border-radius:50%;background:${c[i]};display:grid;place-items:center">${ini(p[0])}</span>${p[0]}<span style="margin-left:auto">${p[1]}</span></div>`).join("")}</div>
+<div class="bx" style="left:332px;top:110px;width:500px;height:578px;padding:22px;overflow:hidden"><h4>THREADS</h4>
+<div style="position:absolute;left:22px;right:22px;bottom:40px;border-top:3px solid #111"></div>
+${TH.map((t,i)=>`<div class="bar" style="left:${30+i*92}px;height:${t[1]*26+30}px;background:${c[i]}"></div><div style="position:absolute;left:${24+i*92}px;width:86px;bottom:${t[1]*26+84}px;text-align:center;font-family:'Archivo Black';font-size:26px">${t[1]}</div><div style="position:absolute;left:${24+i*92}px;width:86px;bottom:8px;text-align:center;font-size:11px;font-weight:700">${t[0].split(" ")[0].toUpperCase()}</div>`).join("")}</div>
+<div class="bx" style="left:862px;top:110px;right:32px;height:578px;padding:22px;background:#FFF8E5"><h4>TODAY</h4>
+${TL.map(([n,k,t],i)=>`<div style="margin-top:14px;background:${{risk:"#FF5FA2",task:"#FFD23D",request:"#fff",decision:"#C6FF3D"}[k]};border:3px solid #111;border-radius:10px;padding:10px 12px;box-shadow:4px 4px 0 #111;transform:rotate(${[-1.2,.8,-.6,1,-.4][i]}deg)"><div style="font-weight:700;font-size:12px">${k.toUpperCase()} · ${n}</div><div style="font-weight:700;font-size:15px;margin-top:2px">${t}</div></div>`).join("")}</div>
+</div>`}},
+
+{name:"Blueprint",tags:["Technical","Wireframe 3D","Architectural"],
+notes:[["Feel","An architect's drawing set. Every number is annotated like a dimension."],["Hero","An isometric wireframe of the room with threads pinned to the place they're about: the bench, the chairs, the wall."],["Best for","Design-and-build teams. It speaks the client's own drawing language."]],
+html:()=>`<div class="screen v7">
+<div class="box" style="left:24px;top:24px;right:24px;bottom:24px"></div>
+<div class="box" style="right:24px;bottom:24px;width:360px;height:96px;display:grid;grid-template-columns:1fr 1fr;font-size:11px">
+<div style="border-right:1px solid rgba(234,242,255,.7);padding:12px"><div class="lbl">Project</div><div class="title" style="margin-top:6px">REYES VILLA / LR-01</div></div>
+<div style="padding:12px"><div class="lbl">Sheet</div><div class="title" style="margin-top:6px">TL-04 · CHAT MAP</div><div style="margin-top:6px;color:#9CC2FF">REV C · 29.10.26</div></div></div>
+<div style="position:absolute;left:52px;top:46px"><div class="lbl">Threadline · as-built chat drawing</div><div style="font-size:26px;font-weight:600;letter-spacing:.06em;margin-top:6px">LIVING ROOM — THREAD PLAN</div></div>
+<svg style="position:absolute;left:40px;top:120px" width="780" height="560" viewBox="0 0 780 560" fill="none" stroke="#EAF2FF" stroke-width="1.2">
+<path d="M120 300 L390 160 L700 300 L430 450 Z" opacity=".9"/>
+<path d="M120 300 L120 120 L390 -20 L390 160" opacity=".5"/><path d="M390 -20 L700 120 L700 300" opacity=".5"/>
+<path d="M250 300 L420 215 L520 262 L350 348 Z" stroke="#7FD1FF" stroke-width="2"/><path d="M250 300 L250 280 L420 195 L520 242 L520 262" stroke="#7FD1FF" stroke-width="2"/><path d="M350 348 L350 328 L250 280 M350 328 L520 242" stroke="#7FD1FF" stroke-width="2"/>
+<rect x="520" y="300" width="56" height="56" transform="skewY(-25)" stroke="#FFD27F" stroke-width="2"/><rect x="590" y="330" width="56" height="56" transform="skewY(-25)" stroke="#FFD27F" stroke-width="2"/>
+<path d="M150 255 L150 175 M390 120 L390 40" stroke="#FF9AA2" stroke-width="2" stroke-dasharray="6 4"/>
+<g stroke-dasharray="3 4" opacity=".8"><line x1="385" y1="270" x2="300" y2="430"/><line x1="580" y1="210" x2="640" y2="70"/><line x1="160" y1="210" x2="40" y2="140"/></g>
+<g fill="#EAF2FF" stroke="none" font-family="Azeret Mono" font-size="12">
+<circle cx="385" cy="270" r="5" fill="#7FD1FF"/><circle cx="580" cy="210" r="5" fill="#FFD27F"/><circle cx="160" cy="210" r="5" fill="#FF9AA2"/>
+<text x="210" y="452">A · CONCRETE BENCH  16 MSG</text><text x="210" y="470" fill="#9CC2FF">L 2.2m · DEMOULD SAT · ▲ CRACK</text>
+<text x="560" y="58">B · FURNITURE  9 MSG</text><text x="560" y="76" fill="#9CC2FF" text-anchor="start">OAT BOUCLE · SAMPLES THU</text>
+<text x="0" y="122">C · PLASTER WALL  5 MSG</text><text x="0" y="140" fill="#9CC2FF">SAND FINISH · RENDER V3</text>
+<line x1="120" y1="330" x2="430" y2="490" stroke="#9CC2FF" stroke-width="1"/><text x="230" y="430" fill="#9CC2FF" transform="rotate(27 230 430)">5.40 m</text></g></svg>
+<div style="position:absolute;left:850px;top:120px;width:300px">
+<div class="lbl">Schedule of items</div>
+<table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:12px">${[["REQ","04"],["TASK","07"],["DEC","04"],["RISK","03"],["MSG","36"]].map(([a,b])=>`<tr><td style="border:1px solid rgba(234,242,255,.5);padding:8px">${a}</td><td style="border:1px solid rgba(234,242,255,.5);padding:8px;text-align:right;font-weight:600;font-size:16px">${b}</td></tr>`).join("")}</table>
+<div class="lbl" style="margin-top:24px">Notes</div>
+${TL.slice(0,4).map(([n,k,t],i)=>`<div style="display:flex;gap:10px;margin-top:10px;font-size:12px;line-height:1.5"><span style="flex:none;width:22px;height:22px;border:1px solid #EAF2FF;border-radius:50%;display:grid;place-items:center">${i+1}</span><span>${t.toUpperCase()} <span style="color:#9CC2FF">— ${n.toUpperCase()}</span></span></div>`).join("")}</div>
+</div>`},
+
+{name:"Noir atelier",tags:["Luxury","Matte black + gold","Material tiles"],
+notes:[["Feel","A high-end interiors studio. Matte black, champagne gold, editorial serif type."],["Hero","A gold gauge for project health, plus 3D material swatches (concrete, oak, boucle) that open their threads."],["Best for","Luxury design clients. It matches the world of the work itself."]],
+html:()=>`<div class="screen v8">
+<div style="position:absolute;left:48px;top:38px;right:48px;display:flex;align-items:baseline;gap:20px">
+<div class="serif" style="font-size:30px;letter-spacing:.02em">Threadline <span class="gold" style="font-style:italic">atelier</span></div>
+<div class="lbl" style="margin-left:auto">Overview</div><div class="lbl">Threads</div><div class="lbl">Board</div><div class="lbl">Clients</div></div>
+<div style="position:absolute;left:48px;right:48px;top:90px;height:1px;background:linear-gradient(90deg,transparent,#CBAA6B,transparent)"></div>
+<div style="position:absolute;left:48px;top:122px;width:470px">
+<div class="lbl">Reyes Villa · Living room</div>
+<div class="serif" style="font-size:66px;line-height:.98;margin-top:12px;letter-spacing:-.01em">The bench cures.<br><span style="font-style:italic" class="gold">The chairs wait.</span></div>
+<div style="font-size:16px;font-weight:300;line-height:1.6;color:#BDB4A4;margin-top:20px;max-width:40ch">Four decisions this week. Fabric samples arrive Thursday, client review Monday at ten.</div></div>
+<div class="card" style="left:560px;top:122px;width:300px;height:300px;display:grid;place-items:center">
+<svg width="230" height="230" viewBox="0 0 230 230"><defs><linearGradient id="gd" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#F3DDA6"/><stop offset=".5" stop-color="#CBAA6B"/><stop offset="1" stop-color="#7A5E2E"/></linearGradient></defs>
+<circle cx="115" cy="115" r="96" stroke="#2A2620" stroke-width="10" fill="none"/>
+<circle cx="115" cy="115" r="96" stroke="url(#gd)" stroke-width="10" fill="none" stroke-dasharray="${2*Math.PI*96*.62} 999" transform="rotate(-90 115 115)" stroke-linecap="round"/>
+${Array.from({length:40},(_,i)=>{const a=i/40*Math.PI*2;return `<line x1="${115+Math.cos(a)*78}" y1="${115+Math.sin(a)*78}" x2="${115+Math.cos(a)*(i%5?82:86)}" y2="${115+Math.sin(a)*(i%5?82:86)}" stroke="#5A5246"/>`}).join("")}
+<text x="115" y="118" text-anchor="middle" fill="#EEE6D8" font-family="Cormorant Garamond" font-size="56">62</text><text x="115" y="146" text-anchor="middle" fill="#8E8574" font-family="Jost" font-size="11" letter-spacing="3">RESOLVED</text></svg></div>
+<div class="card" style="left:888px;top:122px;right:48px;height:300px;padding:24px">
+<div class="lbl">Ledger</div>
+${[["Messages","36"],["Open asks","13"],["Decisions","4"],["Risks","3"],["Budget used","4,620 / 5,000"]].map(([a,b])=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #2A2620;font-size:15px;font-weight:300"><span>${a}</span><span class="serif gold" style="font-size:20px">${b}</span></div>`).join("")}</div>
+<div class="card" style="left:48px;top:450px;width:812px;height:240px;padding:24px">
+<div class="lbl">Materials in discussion</div>
+<div style="display:flex;gap:26px;margin-top:22px">
+${[["Concrete","16","linear-gradient(135deg,#B9B3A8,#7E786F)"],["Oak","9","repeating-linear-gradient(100deg,#9A6B3F 0 6px,#86592F 6px 9px,#A87A4C 9px 16px)"],["Bouclé oat","9","radial-gradient(circle at 30% 30%,#EDE3CF 0 2px,transparent 3px) 0 0/8px 8px,#D8CBB0"],["Sand plaster","5","linear-gradient(135deg,#E2CDA8,#C7AE84)"],["Travertine","5","repeating-linear-gradient(170deg,#E9DCC3 0 10px,#DCCBAA 10px 12px)"]].map(([n,c,bg])=>`<div style="text-align:center"><div class="sw" style="background:${bg}"></div><div class="serif" style="font-size:18px;margin-top:14px">${n}</div><div class="lbl" style="letter-spacing:.2em;margin-top:2px">${c} msgs</div></div>`).join("")}</div></div>
+<div class="card" style="left:888px;top:450px;right:48px;height:240px;padding:24px">
+<div class="lbl">Awaiting</div>
+${TL.slice(0,3).map(([n,k,t])=>`<div style="padding:10px 0;border-bottom:1px solid #2A2620"><div class="serif" style="font-size:17px">${t}</div><div class="lbl" style="letter-spacing:.2em;margin-top:2px">${n} · ${k}</div></div>`).join("")}</div>
+</div>`}
+];
+
+const only = new URLSearchParams(location.search).get("only");
+if (only){ document.body.innerHTML = `<div style="position:relative;width:1200px;height:720px;overflow:hidden">${V[+only-1].html()}</div>`; document.body.style.margin = "0"; throw "single"; }
+const vEl = document.getElementById("variants"), jump = document.getElementById("jump");
+V.forEach((v,i)=>{
+  const n = String(i+1).padStart(2,"0"), id = "v"+n;
+  jump.insertAdjacentHTML("beforeend", `<a href="#${id}">${n} ${v.name}</a>`);
+  vEl.insertAdjacentHTML("beforeend", `<section class="v" id="${id}">
+    <div class="vh"><span class="n">${n}</span><h2>${v.name}</h2><div class="tags">${v.tags.map(t=>`<span>${t}</span>`).join("")}</div></div>
+    <div class="frame">${v.html()}</div>
+    <div class="notes">${v.notes.map(([a,b])=>`<div><b>${a}</b>${b}</div>`).join("")}</div>
+  </section>`);
+});
+function fit(){ document.querySelectorAll(".frame").forEach(f=>f.style.setProperty("--s", f.clientWidth/1200)); }
+fit(); addEventListener("resize", fit);
+if (window.ResizeObserver) new ResizeObserver(fit).observe(document.body);
+</script>
+
+</body></html>

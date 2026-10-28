@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Turn a WhatsApp project chat into threads, decisions, open asks and risks."><meta property="og:title" content="Threadline"><meta property="og:description" content="Turn a WhatsApp project chat into threads, decisions, open asks and risks."><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Turn a WhatsApp project chat into a live 3D mission map: threads, decisions, open asks, risks and ready-to-send updates."><meta property="og:type" content="website"><meta property="og:title" content="Threadline"><meta property="og:description" content="Turn a WhatsApp project chat into a live 3D mission map: threads, decisions, open asks, risks and ready-to-send updates."><meta property="og:url" content="https://imagine-os.github.io/Whatsapp/"><meta property="og:image" content="https://imagine-os.github.io/Whatsapp/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Threadline"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Threadline"><meta name="twitter:description" content="Turn a WhatsApp project chat into a live 3D mission map: threads, decisions, open asks, risks and ready-to-send updates."><meta name="twitter:image" content="https://imagine-os.github.io/Whatsapp/og.jpg"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%2325FF94'/%3E%3Cellipse cx='16' cy='16' rx='15' ry='6' fill='none' stroke='%23C8FF50' stroke-width='2' transform='rotate(-20 16 16)'/%3E%3C/svg%3E"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
 <title>Threadline</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1139,7 +1139,11 @@ let rT, lastW = innerWidth; addEventListener("resize",()=>{ clearTimeout(rT); rT
 const saved = store.get("chat");
 if (!(saved && load(saved.text, saved.name, false))) load(SAMPLE, SAMPLE_NAME, true);
 const h = (location.hash||"").slice(1); if (["overview","threads","board","people","chat","outputs"].includes(h)) state.view = h;
-boot(() => render(true));
+boot(() => {
+  render(true);
+  if (PARAMS.get("open")==="import") openImport();
+  const who = PARAMS.get("person"); if (who){ const p = people().find(x=>firstName(x.name).toLowerCase()===who.toLowerCase()); if (p) openPerson(p.name); }
+});
 (async()=>{ try{ sampleFn = await window.claude?.use?.("sample"); }catch(e){ sampleFn = null; } if (sampleFn) document.querySelectorAll('[data-act="claude"]').forEach(b=>b.hidden=false); })();
 </script>
 
