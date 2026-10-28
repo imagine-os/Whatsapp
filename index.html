@@ -1,0 +1,781 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta property="og:title" content="Threadline"><meta property="og:description" content="Turn a WhatsApp project chat into threads, decisions, open asks and risks."><meta name="description" content="Turn a WhatsApp project chat into threads, decisions, open asks and risks."><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Threadline</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a clay desk. Timeline cards on the left are wired into thread folders, which feed three output objects on the right. */
+:root{
+  --bg:#F2ECE1; --desk:#EAE2D3; --surface:#FBF8F2; --surface-hi:#FFFDF9; --ink:#173238; --muted:#6C7976; --line:#E1D7C6;
+  --teal:#4DB1A8; --coral:#EE7B5D; --mustard:#EDBA44; --green:#5DAA7C; --sky:#7DB4C8; --plum:#B58BC0;
+  --on-accent:#1B2B2E; --hi:rgba(255,255,255,.85); --lo:rgba(90,64,28,.08); --shade:rgba(92,66,30,.22);
+  --good:#3E9466; --warn:#C98A12; --bad:#D2553A;
+  --f-display:"Fraunces",Georgia,"Times New Roman",serif; --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --clay:0 1px 0 var(--hi) inset,0 -3px 0 var(--lo) inset,0 16px 30px -14px var(--shade),0 3px 6px -2px var(--shade);
+  --clay-sm:0 1px 0 var(--hi) inset,0 -2px 0 var(--lo) inset,0 8px 16px -8px var(--shade),0 2px 3px -1px var(--shade);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1B1916; --desk:#221F1B; --surface:#2A2622; --surface-hi:#322D28; --ink:#F2EBDD; --muted:#A99F90; --line:#3B352E;
+  --teal:#5CC2B8; --coral:#F08C70; --mustard:#EFC45C; --green:#6DBB8C; --sky:#8CC1D4; --plum:#C49ACE;
+  --on-accent:#17201F; --hi:rgba(255,255,255,.07); --lo:rgba(0,0,0,.25); --shade:rgba(0,0,0,.55);
+  --good:#6DBB8C; --warn:#EFC45C; --bad:#F08C70; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1B1916; --desk:#221F1B; --surface:#2A2622; --surface-hi:#322D28; --ink:#F2EBDD; --muted:#A99F90; --line:#3B352E;
+  --teal:#5CC2B8; --coral:#F08C70; --mustard:#EFC45C; --green:#6DBB8C; --sky:#8CC1D4; --plum:#C49ACE;
+  --on-accent:#17201F; --hi:rgba(255,255,255,.07); --lo:rgba(0,0,0,.25); --shade:rgba(0,0,0,.55);
+  --good:#6DBB8C; --warn:#EFC45C; --bad:#F08C70; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  background-image:radial-gradient(1200px 500px at 70% -10%,var(--surface-hi),transparent 70%)}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px;border-radius:10px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;font-weight:600}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px}
+.mark{width:40px;height:40px;border-radius:13px;background:linear-gradient(145deg,var(--teal),color-mix(in oklab,var(--teal) 70%,#0b3b37));box-shadow:var(--clay-sm);display:grid;place-items:center;color:var(--on-accent)}
+.brand b{font-family:var(--f-display);font-size:22px;font-weight:700;letter-spacing:-.01em}
+.brand small{display:block;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:14px;padding:10px 16px;font-weight:600;background:linear-gradient(180deg,var(--surface-hi),var(--surface));box-shadow:var(--clay-sm);display:inline-flex;align-items:center;gap:8px;transition:transform .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(1px);box-shadow:0 1px 0 var(--hi) inset,0 2px 4px -2px var(--shade)}
+.btn.wa{background:linear-gradient(180deg,color-mix(in oklab,var(--green) 88%,white),var(--green));color:var(--on-accent)}
+.btn.ai{background:linear-gradient(180deg,color-mix(in oklab,var(--coral) 88%,white),var(--coral));color:var(--on-accent)}
+.btn[disabled]{opacity:.55;cursor:default;transform:none}
+.btn svg{width:18px;height:18px}
+
+/* heading */
+.head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:end;margin:28px 0 18px}
+.head h1{font-size:clamp(28px,4.2vw,46px);line-height:1.05;letter-spacing:-.02em}
+.head h1 em{font-style:normal;color:var(--coral)}
+.head p{margin:8px 0 0;color:var(--muted);max-width:62ch}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;background:var(--surface);box-shadow:var(--clay-sm);letter-spacing:.02em}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.pill.claude i{background:var(--coral)} .pill.local i{background:var(--teal)} .pill.sample i{background:var(--mustard)}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.stat{background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:16px;box-shadow:var(--clay-sm);padding:10px 14px;min-width:104px}
+.stat b{display:block;font-family:var(--f-display);font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stat.alert b{color:var(--bad)}
+
+/* tabs */
+.tabs{display:inline-flex;gap:4px;padding:5px;border-radius:16px;background:var(--desk);box-shadow:inset 0 2px 5px var(--lo);margin-bottom:18px;flex-wrap:wrap}
+.tab{border:0;background:transparent;padding:8px 16px;border-radius:12px;font-weight:600;color:var(--muted)}
+.tab[aria-selected="true"]{background:linear-gradient(180deg,var(--surface-hi),var(--surface));color:var(--ink);box-shadow:var(--clay-sm)}
+
+/* map */
+.desk{background:var(--desk);border-radius:28px;padding:28px max(16px,2.4vw);box-shadow:inset 0 2px 10px var(--lo),0 1px 0 var(--hi)}
+.stage{position:relative;transform:perspective(1800px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .4s ease-out;transform-style:preserve-3d}
+.cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(40px,6vw,88px);position:relative;z-index:1}
+.colh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:14px}
+.colh h2{font-size:clamp(24px,2.6vw,32px);letter-spacing:-.015em}
+.colh.t h2{color:var(--ink)} .colh.th h2{color:var(--coral)} .colh.o h2{color:var(--green)}
+.colh .ctl{display:flex;gap:6px}
+.icon-btn{border:0;width:30px;height:30px;border-radius:10px;background:var(--surface);box-shadow:var(--clay-sm);display:grid;place-items:center}
+.icon-btn[disabled]{opacity:.35;cursor:default}
+.icon-btn svg{width:16px;height:16px}
+svg.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+svg.wires path{fill:none;stroke-width:3.2;stroke-linecap:round;opacity:.8;transition:opacity .2s}
+svg.wires .dim{opacity:.12}
+
+/* timeline */
+.tl{display:flex;flex-direction:column;gap:18px;position:relative}
+.tl::before{content:"";position:absolute;left:34px;top:30px;bottom:30px;width:4px;border-radius:4px;background:color-mix(in oklab,var(--teal) 60%,var(--desk))}
+.tcard{position:relative;display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:start;background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:18px;padding:12px 14px;box-shadow:var(--clay);border:0;text-align:left;width:100%;transition:transform .2s}
+.tcard:hover{transform:translateY(-2px) translateZ(10px)}
+.ball{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 32% 28%,color-mix(in oklab,var(--c) 55%,white) 0,var(--c) 45%,color-mix(in oklab,var(--c) 75%,black) 100%);box-shadow:0 4px 8px -3px var(--shade);display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--on-accent)}
+.tmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+.tmeta b{font-weight:700}
+.ttext{font-size:14px;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ttime{font-size:11px;color:var(--muted);margin-top:4px}
+.kind{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:999px}
+.k-decision{background:color-mix(in oklab,var(--green) 25%,transparent);color:color-mix(in oklab,var(--green) 60%,var(--ink))}
+.k-request{background:color-mix(in oklab,var(--sky) 30%,transparent);color:color-mix(in oklab,var(--sky) 45%,var(--ink))}
+.k-task{background:color-mix(in oklab,var(--mustard) 30%,transparent);color:color-mix(in oklab,var(--mustard) 40%,var(--ink))}
+.k-risk{background:color-mix(in oklab,var(--coral) 28%,transparent);color:color-mix(in oklab,var(--coral) 55%,var(--ink))}
+.k-photo{background:color-mix(in oklab,var(--plum) 25%,transparent);color:color-mix(in oklab,var(--plum) 45%,var(--ink))}
+
+/* thread folders */
+.threads{display:flex;flex-direction:column;gap:30px;padding-top:12px}
+.trow{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;align-items:center;position:relative}
+.folder{position:relative;height:118px;border:0;padding:0;background:none;perspective:600px}
+.folder .back{position:absolute;inset:8px 0 0 0;border-radius:6px 16px 16px 16px;background:color-mix(in oklab,var(--c) 78%,black);box-shadow:0 14px 22px -12px var(--shade)}
+.folder .back::before{content:"";position:absolute;left:0;top:-12px;width:46%;height:20px;border-radius:12px 14px 0 0;background:inherit}
+.folder .sheet{position:absolute;left:10px;right:10px;top:4px;height:60px;border-radius:8px;background:var(--surface-hi);box-shadow:0 2px 4px var(--lo);transition:transform .3s}
+.folder .front{position:absolute;inset:22px 0 0 0;border-radius:14px;background:linear-gradient(180deg,color-mix(in oklab,var(--c) 85%,white),var(--c));box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 -3px 0 rgba(0,0,0,.08) inset,0 12px 20px -10px var(--shade);transform-origin:bottom center;transition:transform .35s cubic-bezier(.3,1.4,.6,1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--on-accent);padding:6px 10px;text-align:center}
+.folder .front svg{width:24px;height:24px;opacity:.85}
+.folder .front span{font-family:var(--f-display);font-weight:600;font-size:15px;line-height:1.1}
+.folder .front small{font-size:11px;font-weight:600;opacity:.75}
+.folder:hover .front,.folder[aria-pressed="true"] .front{transform:rotateX(-22deg)}
+.folder:hover .sheet,.folder[aria-pressed="true"] .sheet{transform:translateY(-8px)}
+.folder .dot{position:absolute;left:-8px;top:68px;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in oklab,var(--c) 50%,white),var(--c) 60%);box-shadow:0 2px 4px var(--shade);z-index:2}
+.subs{display:flex;flex-direction:column;gap:8px;position:relative}
+.subs::before{content:"";position:absolute;left:-12px;top:16px;bottom:16px;width:3px;border-radius:3px;background:var(--c);opacity:.75}
+.chip{display:flex;align-items:center;gap:8px;background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:12px;padding:6px 12px;box-shadow:var(--clay-sm);font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip i{flex:none;width:9px;height:9px;border-radius:50%;background:var(--c)}
+.more-threads{font-size:13px;color:var(--muted);padding-left:4px}
+
+/* outputs */
+.outs{display:flex;flex-direction:column;gap:34px;padding-top:12px}
+.obj{border:0;padding:0;background:none;text-align:left;width:100%;transition:transform .25s}
+.obj:hover{transform:translateY(-3px) rotate(-.6deg)}
+.doc{position:relative;background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:10px;padding:16px 18px 14px;box-shadow:var(--clay),8px 8px 0 -2px color-mix(in oklab,var(--surface) 80%,var(--line));clip-path:polygon(0 0,calc(100% - 26px) 0,100% 26px,100% 100%,0 100%)}
+.doc::after{content:"";position:absolute;right:0;top:0;width:26px;height:26px;background:linear-gradient(225deg,var(--desk) 50%,var(--line) 50%);border-bottom-left-radius:6px}
+.obj h3{font-size:17px}
+.lines{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.lines span{height:6px;border-radius:4px;background:var(--line)}
+.bars{display:flex;align-items:flex-end;gap:6px;height:52px;padding:8px;border-radius:8px;background:color-mix(in oklab,var(--teal) 10%,var(--surface))}
+.bars span{flex:1;border-radius:3px 3px 0 0;min-height:4px}
+.win{background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:14px;box-shadow:var(--clay);overflow:hidden}
+.win .chrome{display:flex;gap:6px;padding:8px 10px;background:color-mix(in oklab,var(--line) 70%,var(--surface))}
+.win .chrome i{width:9px;height:9px;border-radius:50%}
+.win .body{padding:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.win .lane{background:var(--desk);border-radius:6px;padding:4px;text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.win .lane b{display:block;font-family:var(--f-display);font-size:20px;color:var(--ink);letter-spacing:0}
+.env{position:relative;background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:12px;box-shadow:var(--clay);padding:68px 18px 16px;overflow:hidden;text-align:center}
+.env::before{content:"";position:absolute;inset:0 0 auto 0;height:58px;background:linear-gradient(180deg,var(--surface),color-mix(in oklab,var(--line) 60%,var(--surface)));clip-path:polygon(0 0,100% 0,50% 100%)}
+.env .seal{position:absolute;left:50%;top:30px;width:26px;height:26px;margin-left:-13px;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in oklab,var(--green) 50%,white),var(--green));box-shadow:0 3px 6px -2px var(--shade)}
+.osub{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* board */
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.lanecol{background:var(--desk);border-radius:22px;padding:14px;box-shadow:inset 0 2px 8px var(--lo);min-width:0}
+.lanecol h3{font-size:18px;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.lanecol h3 span{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.bcard{background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:14px;box-shadow:var(--clay-sm);padding:10px 12px;margin-bottom:10px;border-left:5px solid var(--c)}
+.bcard.done{opacity:.5}
+.bcard.done .btxt{text-decoration:line-through}
+.btxt{font-size:14px}
+.bfoot{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--muted)}
+.bfoot label{display:inline-flex;gap:5px;align-items:center;cursor:pointer;color:var(--ink);font-weight:600}
+.due{font-weight:700;color:var(--warn)}
+.empty{font-size:13px;color:var(--muted);padding:6px 2px}
+
+/* people */
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.pcard{background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:20px;box-shadow:var(--clay);padding:16px;display:flex;flex-direction:column;gap:10px}
+.prow{display:flex;gap:12px;align-items:center}
+.prow h3{font-size:17px}
+.meter{height:8px;border-radius:6px;background:var(--desk);overflow:hidden;box-shadow:inset 0 1px 2px var(--lo)}
+.meter span{display:block;height:100%;border-radius:6px;background:var(--c)}
+.pkinds{display:flex;gap:6px;flex-wrap:wrap}
+.activity{background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:20px;box-shadow:var(--clay);padding:16px 18px;margin-bottom:18px}
+.activity h3{font-size:18px;margin-bottom:12px}
+.acts{display:flex;align-items:flex-end;gap:6px;height:120px;overflow-x:auto;padding-bottom:2px}
+.acts div{flex:1 0 22px;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.acts div span{width:100%;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,color-mix(in oklab,var(--teal) 70%,white),var(--teal))}
+.acts div small{font-size:10px;color:var(--muted);font-family:var(--f-mono)}
+.acts div em{font-style:normal;font-size:11px;font-family:var(--f-mono)}
+
+/* chat list */
+.search{width:100%;max-width:420px;border:0;border-radius:14px;padding:10px 14px;background:var(--surface);box-shadow:inset 0 2px 4px var(--lo);font:inherit;color:var(--ink);margin-bottom:14px}
+.chat{display:flex;flex-direction:column;gap:8px}
+.msg{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;padding:10px 14px;border-radius:14px;background:var(--surface);box-shadow:var(--clay-sm);border-left:5px solid var(--c)}
+.msg .who{font-weight:700;font-size:13px;overflow-wrap:anywhere}
+.msg .when{font-size:11px;color:var(--muted)}
+.msg .what{font-size:14px;overflow-wrap:anywhere;white-space:pre-wrap}
+.msg .tags{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+.daysep{font-family:var(--f-display);font-size:15px;color:var(--muted);margin:10px 0 2px}
+
+/* overlay */
+.overlay{position:fixed;inset:0;background:color-mix(in oklab,var(--bg) 60%,transparent);backdrop-filter:blur(6px);z-index:50;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal{width:min(760px,100%);max-height:calc(100vh - 40px);overflow:auto;background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:26px;box-shadow:var(--clay),0 40px 80px -30px var(--shade);padding:24px}
+.modal h2{font-size:26px;margin-bottom:4px}
+.mhead{display:flex;justify-content:space-between;gap:12px;align-items:start;margin-bottom:16px}
+.ways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.way{background:var(--bg);border-radius:18px;padding:16px;box-shadow:inset 0 1px 0 var(--hi),0 6px 14px -10px var(--shade);display:flex;flex-direction:column;gap:8px}
+.way h3{font-size:17px}
+.way p{margin:0;font-size:13px;color:var(--muted)}
+.way ol{margin:0;padding-left:18px;font-size:13px;color:var(--muted)}
+.drop{border:2px dashed color-mix(in oklab,var(--green) 60%,var(--line));border-radius:14px;padding:14px;text-align:center;font-size:13px;font-weight:600;background:color-mix(in oklab,var(--green) 8%,transparent);cursor:pointer}
+.drop.over{background:color-mix(in oklab,var(--green) 22%,transparent)}
+textarea{width:100%;min-height:120px;border:0;border-radius:12px;padding:10px;font:13px/1.4 var(--f-mono);background:var(--surface);color:var(--ink);box-shadow:inset 0 2px 4px var(--lo);resize:vertical}
+.soon{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--warn)}
+pre.out{white-space:pre-wrap;font:14px/1.55 var(--f-body);background:var(--bg);border-radius:14px;padding:16px;box-shadow:inset 0 2px 5px var(--lo);margin:0 0 14px;max-height:55vh;overflow:auto}
+.privacy{font-size:12px;color:var(--muted);margin-top:14px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;z-index:60;box-shadow:0 10px 30px -10px var(--shade);max-width:calc(100% - 32px)}
+.think{display:flex;gap:14px;align-items:center}
+.spin{width:38px;height:38px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--coral);animation:sp 1s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+@media (max-width:1020px){
+  .cols{grid-template-columns:1fr;gap:34px}
+  svg.wires{display:none}
+  .stage{transform:none!important}
+  .outs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .board{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .head{grid-template-columns:1fr}
+  .outs{grid-template-columns:1fr}
+  .board{grid-template-columns:1fr}
+  .ways{grid-template-columns:1fr}
+  .trow{grid-template-columns:130px minmax(0,1fr);gap:16px}
+  .msg{grid-template-columns:1fr;gap:2px}
+  .stat{min-width:0;flex:1 1 30%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.stage{transform:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 6c6 0 6 6 12 6M4 18c6 0 6-6 12-6"/><circle cx="19" cy="12" r="2.4" fill="currentColor"/></svg></div>
+      <div><b>Threadline</b><small>WhatsApp to project</small></div>
+    </div>
+    <div class="actions">
+      <button class="btn wa" id="connectBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-11.8 7L4 20l1.1-4A8 8 0 1 1 20 12z"/><path d="M9 9.5c.3 2.2 2.3 4.2 4.5 4.5l1.2-1.2 1.8.9"/></svg>Connect WhatsApp</button>
+      <button class="btn ai" id="aiBtn" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></svg>Analyze with Claude</button>
+    </div>
+  </header>
+
+  <section class="head">
+    <div>
+      <h1 id="title">One chat. <em>Every thread</em> sorted.</h1>
+      <p id="sub"></p>
+    </div>
+    <div id="sourcePills" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+  </section>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-view="map" aria-selected="true">Map</button>
+    <button class="tab" role="tab" data-view="board" aria-selected="false">Board</button>
+    <button class="tab" role="tab" data-view="people" aria-selected="false">People</button>
+    <button class="tab" role="tab" data-view="chat" aria-selected="false">Chat</button>
+  </div>
+
+  <main id="view"></main>
+</div>
+
+<div class="overlay" id="overlay" hidden><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const SAMPLE_NAME = "Reyes Villa · Living Room";
+const SAMPLE = `[27/10/2026, 9:12:04 AM] Daniel: Morning team. Living room for the Reyes villa is the priority this week. Concrete bench and the furniture selections both need to land before Friday.
+[27/10/2026, 9:15:40 AM] Maya: I'll send the updated render and finish palette by noon.
+[27/10/2026, 9:38:11 AM] Rafael · Concrete: Bench mold is ready. Can you confirm the final length? Drawing says 2.4m but site note says 2.2m
+[27/10/2026, 9:41:02 AM] Leo: Site measured 2.25m wall to window. 2.2m leaves a clean gap
+[27/10/2026, 9:44:30 AM] Daniel: Approved, go with 2.2m for the bench
+[27/10/2026, 10:14:51 AM] Kenji · Furniture: Sharing options for the lounge chair. Boucle in ivory or oat
+[27/10/2026, 10:15:03 AM] Kenji · Furniture: <attached: 00000012-PHOTO-2026-10-27-10-15-03.jpg>
+[27/10/2026, 10:22:17 AM] Maya: Oat works better with the travertine. Can you send fabric samples to the studio?
+[27/10/2026, 10:30:45 AM] Kenji · Furniture: Will send samples tomorrow by courier
+[27/10/2026, 11:03:12 AM] Daniel: What's the quote for 2 chairs + the fluted side table?
+[27/10/2026, 11:20:40 AM] Kenji · Furniture: Chairs 1,850 each, side table 920. Lead time 3 weeks
+[27/10/2026, 11:42:09 AM] Maya: Render v3 attached. Warmer lighting, plaster wall in sand
+[27/10/2026, 11:42:15 AM] Maya: <attached: 00000015-PHOTO-2026-10-27-11-42-15.jpg>
+[27/10/2026, 12:05:33 PM] Daniel: Love v3. Let's go with plaster in sand
+[27/10/2026, 4:48:20 PM] Rafael · Concrete: Pour scheduled Wednesday 8am. Need site access from 7
+[27/10/2026, 4:52:02 PM] Leo: I'll be on site at 7 to open up
+[28/10/2026, 8:05:44 AM] Rafael · Concrete: Pour started
+[28/10/2026, 8:06:01 AM] Rafael · Concrete: <attached: 00000021-PHOTO-2026-10-28-08-06-01.jpg>
+[28/10/2026, 9:30:18 AM] Leo: Small issue: the floor drain is 4cm off from the drawing, bench leg may sit on it
+[28/10/2026, 9:34:50 AM] Maya: Can you send a photo with a tape measure?
+[28/10/2026, 9:40:12 AM] Leo: <attached: 00000024-PHOTO-2026-10-28-09-40-12.jpg>
+[28/10/2026, 9:52:27 AM] Daniel: Shift the left leg 6cm inward. Confirmed with Rafael by phone
+[28/10/2026, 11:15:39 AM] Kenji · Furniture: Fabric samples are delayed, courier says Thursday now
+[28/10/2026, 11:18:03 AM] Daniel: That pushes the chair order. Kenji please hold the oat slot for us
+[28/10/2026, 11:25:46 AM] Kenji · Furniture: Holding it until Friday
+[28/10/2026, 2:10:21 PM] Maya: Budget check: furniture now at 4,620 vs 5,000 allowance
+[28/10/2026, 2:14:09 PM] Daniel: Good. Need the rug quote before we sign off on the full package
+[28/10/2026, 3:30:55 PM] Maya: I'll get the rug quote by Thursday
+[29/10/2026, 7:58:12 AM] Rafael · Concrete: Bench is curing well. Demould Saturday, then sealing
+[29/10/2026, 8:02:40 AM] Rafael · Concrete: <attached: 00000031-PHOTO-2026-10-29-08-02-40.jpg>
+[29/10/2026, 9:12:30 AM] Leo: Hairline crack on the back edge, mostly hidden against the wall
+[29/10/2026, 9:20:14 AM] Rafael · Concrete: Normal for this mix, we can fill it before sealing. Will check Saturday
+[29/10/2026, 10:05:48 AM] Daniel: Ok. Rafael please send a photo after filling so the client can see it
+[29/10/2026, 10:40:22 AM] Maya: Client presentation moved to Monday 10am
+[29/10/2026, 10:44:59 AM] Daniel: Agreed. Maya can you put the deck together with render v3, bench progress and chair options?
+[29/10/2026, 10:47:31 AM] Maya: On it, draft by Friday`;
+
+const COLORS = ["teal","coral","mustard","green","sky","plum"];
+const ICONS = {
+  block:'<path d="M4 9l8-4 8 4-8 4-8-4z"/><path d="M4 9v6l8 4 8-4V9"/><path d="M12 13v6"/>',
+  chair:'<path d="M7 4h10v8H7z"/><path d="M5 12h14v3H5z"/><path d="M7 15v5M17 15v5"/>',
+  palette:'<circle cx="12" cy="12" r="8"/><circle cx="9" cy="10" r="1.2"/><circle cx="14" cy="8.8" r="1.2"/><circle cx="15.6" cy="13.4" r="1.2"/>',
+  coin:'<ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7"/><path d="M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/>',
+  calendar:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+  chat:'<path d="M5 5h14v10H9l-4 4z"/>'
+};
+const DEFS = [
+  {key:"build",name:"Concrete & Site",icon:"block",w:1,words:["concrete","bench","pour","mold","mould","curing","cure","demould","sealing","seal","crack","drain","slab","site","wall","tile","leg","floor","contractor","plumbing","electric"]},
+  {key:"furn",name:"Furniture",icon:"chair",w:1,words:["chair","chairs","sofa","table","furniture","fabric","boucle","upholstery","rug","courier","lead time","supplier","delivery","samples","lamp","cushion"]},
+  {key:"design",name:"Design Direction",icon:"palette",w:1,words:["render","palette","plaster","finish","lighting","travertine","deck","presentation","colour","color","mood","drawing","sketch","material","layout","concept"]},
+  {key:"money",name:"Budget & Quotes",icon:"coin",w:1,words:["quote","budget","cost","price","allowance","invoice","payment","pay","deposit","package","discount"]},
+  {key:"time",name:"Schedule",icon:"calendar",w:.6,words:["monday","tuesday","wednesday","thursday","friday","saturday","sunday","tomorrow","schedule","deadline","moved","next week","timeline","reschedule"]}
+];
+DEFS.forEach(d=>d.re=new RegExp("\\b("+d.words.map(w=>w.replace(/ /g,"\\s")).join("|")+")\\b","gi"));
+
+const KIND_RE = {
+  decision:/\b(approved?|decided|let'?s go with|go with|finali[sz]ed?|final call|confirmed|agreed|signed off|locked in)\b/i,
+  risk:/\b(delay(ed|s)?|late|issue|problem|crack(ed|s)?|broken|damaged?|missing|wrong|shortage|behind|stuck|back-?ordered|leak(ing)?|off from)\b/i,
+  request:/(\b(can you|could you|please|pls|need you to|send (me|us)|let me know|waiting (on|for))\b|\?\s*$)/i,
+  task:/\b(i'?ll|i will|we'?ll|will (send|do|deliver|share|check|call|order|get|fix)|on it|todo|to do)\b/i
+};
+const DUE_RE = /\b(today|tonight|tomorrow|eod|end of (day|week)|next week|(?:by |on |until )?(?:mon|tues|wednes|thurs|fri|satur|sun)day(?: \d{1,2}(?:am|pm))?|\d{1,2}(?:st|nd|rd|th)? (?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]* \d{1,2})\b/i;
+const MEDIA_RE = /<attached:[^>]+>|<media omitted>|\b(image|video|audio|sticker|gif|document) omitted\b|\S+\.(jpe?g|png|webp|mp4|opus|pdf) \(file attached\)/gi;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store = {
+  get(k){try{return JSON.parse(localStorage.getItem("threadline."+k))}catch(e){return null}},
+  set(k,v){try{localStorage.setItem("threadline."+k,JSON.stringify(v))}catch(e){}},
+  del(k){try{localStorage.removeItem("threadline."+k)}catch(e){}}
+};
+const fmtTime = d => d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+const fmtDay = d => d.toLocaleDateString([], {weekday:"short",day:"numeric",month:"short"});
+const initials = n => n.replace(/[^\p{L}\s]/gu," ").trim().split(/\s+/).slice(0,2).map(p=>p[0]||"").join("").toUpperCase() || "?";
+const firstName = n => n.split(/[\s·\-]/)[0];
+
+/* ---------- parsing ---------- */
+function parseChat(raw){
+  const lines = raw.replace(/\r/g,"").replace(/[\u200e\u200f\u202a-\u202e\ufeff]/g,"").replace(/[\u202f\u00a0]/g," ").split("\n");
+  const RE_IOS = /^\[(\d{1,4})[\/.\-](\d{1,2})[\/.\-](\d{1,4}),?\s+(\d{1,2})[:.](\d{2})(?:[:.](\d{2}))?\s*([ap]\.?\s?m\.?)?\]\s*([^:]{1,60}?):\s?([\s\S]*)$/i;
+  const RE_AND = /^(\d{1,4})[\/.\-](\d{1,2})[\/.\-](\d{1,4}),?\s+(\d{1,2})[:.](\d{2})(?:[:.](\d{2}))?\s*([ap]\.?\s?m\.?)?\s[-–]\s([^:]{1,60}?):\s?([\s\S]*)$/i;
+  const RE_HEAD = /^\[?\d{1,4}[\/.\-]\d{1,2}[\/.\-]\d{1,4},?\s+\d{1,2}[:.]\d{2}/;
+  const raws = []; let cur = null;
+  for (const line of lines){
+    const m = line.match(RE_IOS) || line.match(RE_AND);
+    if (m){ cur = {p:m.slice(1,8), author:m[8].trim(), text:m[9]}; raws.push(cur); }
+    else if (RE_HEAD.test(line)){ cur = null; }
+    else if (cur){ cur.text += "\n" + line; }
+  }
+  let order = "DMY";
+  if (raws.some(r=>+r.p[0]>31)) order = "YMD";
+  else if (raws.some(r=>+r.p[0]>12)) order = "DMY";
+  else if (raws.some(r=>+r.p[1]>12)) order = "MDY";
+  const msgs = [];
+  raws.forEach(r=>{
+    let [a,b,c,h,mi,s,ap] = r.p; let y,mo,d;
+    if (order==="YMD"){y=+a;mo=+b;d=+c} else if (order==="MDY"){mo=+a;d=+b;y=+c} else {d=+a;mo=+b;y=+c}
+    if (y<100) y+=2000;
+    h=+h; if (ap){const pm=/p/i.test(ap); if(pm&&h<12)h+=12; if(!pm&&h===12)h=0;}
+    const t = new Date(y,mo-1,d,h,+mi,+(s||0));
+    let text = r.text.trim();
+    if (/end-to-end encrypted|created (this )?group|changed the (subject|group)|joined using this group|security code changed/i.test(text)) return;
+    const media = (text.match(MEDIA_RE)||[]).length > 0;
+    const clean = text.replace(MEDIA_RE,"").trim();
+    if (!clean && !media) return;
+    msgs.push({id:msgs.length+1, t, author:r.author, text:clean, media});
+  });
+  return msgs;
+}
+
+/* ---------- on-device analysis ---------- */
+function detectKind(m){
+  if (!m.text) return null;
+  for (const k of ["decision","risk","request","task"]) if (KIND_RE[k].test(m.text)) return k;
+  return null;
+}
+function localAnalyze(msgs){
+  const people = [...new Set(msgs.map(m=>m.author))];
+  const firsts = people.map(p=>[firstName(p).toLowerCase(),p]);
+  const tally = {}; DEFS.forEach(d=>tally[d.key]={});
+  const assign = {};
+  msgs.forEach((m,i)=>{
+    let best=null,score=0;
+    if (m.text) DEFS.forEach(d=>{
+      const hits = m.text.match(d.re)||[];
+      hits.forEach(h=>{const k=h.toLowerCase(); tally[d.key][k]=(tally[d.key][k]||0)+1});
+      const s = hits.length*d.w; if (s>score){score=s;best=d.key}
+    });
+    if (!best){
+      const prevSame = [...msgs.slice(0,i)].reverse().find(p=>p.author===m.author);
+      const prev = (prevSame && m.t-prevSame.t < 20*60e3) ? prevSame : (i>0 && m.t-msgs[i-1].t < 20*60e3 ? msgs[i-1] : null);
+      best = prev ? assign[prev.id] : "general";
+    }
+    assign[m.id] = best;
+  });
+  const threads = [...DEFS, {key:"general",name:"General",icon:"chat"}].map(d=>{
+    const ids = msgs.filter(m=>assign[m.id]===d.key).map(m=>m.id);
+    const subs = Object.entries(tally[d.key]||{}).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([w])=>w[0].toUpperCase()+w.slice(1));
+    return {key:d.key,name:d.name,icon:d.icon,ids,subs};
+  }).filter(t=>t.ids.length).sort((a,b)=>b.ids.length-a.ids.length);
+  threads.forEach((t,i)=>{ t.color = COLORS[i%COLORS.length]; if(!t.subs.length) t.subs=["Updates"]; });
+  const items = [];
+  msgs.forEach(m=>{
+    const kind = detectKind(m); if (!kind) return;
+    let owner = "";
+    if (kind==="task") owner = m.author;
+    if (kind==="request"){ const hit = firsts.find(([f,p])=>p!==m.author && f.length>1 && new RegExp("\\b"+f.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b","i").test(m.text)); owner = hit ? hit[1] : ""; }
+    if (kind==="decision") owner = m.author;
+    const due = (m.text.match(DUE_RE)||[])[0] || "";
+    items.push({id:m.id, kind, text:m.text.length>160?m.text.slice(0,157)+"…":m.text, owner, due:due.replace(/^(by|on|until) /i,"")});
+  });
+  const count = k => items.filter(i=>i.kind===k).length;
+  const start = msgs[0]?.t, end = msgs[msgs.length-1]?.t;
+  const summary = msgs.length ? `${msgs.length} messages from ${people.length} people between ${fmtDay(start)} and ${fmtDay(end)}. ${count("decision")} decisions were made, ${count("request")} requests and ${count("task")} commitments are on the table, and ${count("risk")} risks were flagged. Busiest thread: ${threads[0]?.name || "none"}.` : "No messages yet.";
+  return {source:"local", summary, threads, items, next:[]};
+}
+
+/* ---------- state ---------- */
+const state = { name:SAMPLE_NAME, sample:true, msgs:[], an:null, view:"map", filter:null, page:0, done:{}, q:"" };
+function chatKey(){ return state.name + "|" + state.msgs.length; }
+function load(raw, name, isSample){
+  const msgs = parseChat(raw);
+  if (!msgs.length) return false;
+  state.msgs = msgs; state.name = name; state.sample = !!isSample; state.filter=null; state.page=0;
+  const saved = store.get("analysis");
+  state.an = (saved && saved.key===chatKey()) ? saved.an : localAnalyze(msgs);
+  state.done = store.get("done:"+chatKey()) || {};
+  return true;
+}
+const byId = id => state.msgs[id-1];
+function threadOf(id){ return state.an.threads.find(t=>t.ids.includes(id)); }
+function colorOf(id){ return threadOf(id)?.color || "plum"; }
+function personColor(n){ let h=0; for(const c of n) h=(h*31+c.charCodeAt(0))>>>0; return COLORS[h%COLORS.length]; }
+
+/* ---------- rendering ---------- */
+const svg = (p,extra="") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" ${extra}>${p}</svg>`;
+function header(){
+  const m = state.msgs, an = state.an;
+  const people = new Set(m.map(x=>x.author)).size;
+  $("#title").innerHTML = `${esc(state.name)}`;
+  $("#sub").textContent = an.summary;
+  $("#sourcePills").innerHTML =
+    (state.sample?`<span class="pill sample"><i></i>Sample chat</span>`:"") +
+    (an.source==="claude"?`<span class="pill claude"><i></i>Claude analysis</span>`:`<span class="pill local"><i></i>Keyword analysis · on device</span>`);
+  const open = k => an.items.filter(i=>i.kind===k && !state.done[i.id]).length;
+  const stats = [["Messages",m.length],["People",people],["Photos",m.filter(x=>x.media).length],["Decisions",an.items.filter(i=>i.kind==="decision").length],["Open asks",open("request")+open("task")],["Risks",open("risk"),"alert"]];
+  $("#stats").innerHTML = stats.map(([l,v,c])=>`<div class="stat ${c&&v?c:""}"><b>${v}</b><span>${l}</span></div>`).join("");
+}
+function kindTag(k){ return k?`<span class="kind k-${k}">${k}</span>`:""; }
+
+function viewMap(){
+  const an = state.an;
+  let entries = an.items.map(i=>({...i, m:byId(i.id)})).filter(e=>e.m);
+  if (state.filter){
+    const t = an.threads.find(x=>x.key===state.filter);
+    entries = entries.filter(e=>t.ids.includes(e.id));
+    if (!entries.length) entries = t.ids.map(id=>({id, kind:byId(id).media?"photo":null, text:byId(id).text||"Photo", m:byId(id)}));
+  }
+  const per = 5, pages = Math.max(1,Math.ceil(entries.length/per));
+  state.page = Math.min(state.page, pages-1);
+  const endIdx = entries.length - state.page*per;
+  const slice = entries.slice(Math.max(0,endIdx-per), endIdx);
+  const shown = an.threads.slice(0,4), hidden = an.threads.length - shown.length;
+  const tCounts = an.threads.map(t=>t.ids.length), maxT = Math.max(1,...tCounts);
+  const lanes = ["request","decision","task","risk"].map(k=>[k,an.items.filter(i=>i.kind===k).length]);
+  const nextN = nextSteps().length;
+  return `
+  <div class="desk"><div class="stage" id="stage">
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
+    <div class="cols">
+      <section>
+        <div class="colh t"><h2>Timeline</h2><div class="ctl">
+          <button class="icon-btn" id="older" aria-label="Earlier moments" ${state.page>=pages-1?"disabled":""}>${svg('<path d="M15 6l-6 6 6 6"/>')}</button>
+          <button class="icon-btn" id="newer" aria-label="Later moments" ${state.page===0?"disabled":""}>${svg('<path d="M9 6l6 6-6 6"/>')}</button>
+        </div></div>
+        <div class="tl">
+          ${slice.map(e=>{const t=threadOf(e.id);return `
+          <button class="tcard" data-id="${e.id}" data-thread="${t?.key||""}" style="--c:var(--${t?.color||"plum"})" type="button">
+            <span class="ball">${esc(initials(e.m.author))}</span>
+            <span style="min-width:0">
+              <span class="tmeta"><b>${esc(e.m.author)}</b>${kindTag(e.kind)}</span>
+              <span class="ttext">${esc(e.text)}</span>
+              <span class="ttime mono" style="display:block">${fmtDay(e.m.t)} · ${fmtTime(e.m.t)}${e.owner&&e.kind!=="decision"?` · <b>${esc(e.owner)}</b>`:""}${e.due?` · <span class="due">${esc(e.due)}</span>`:""}</span>
+            </span>
+          </button>`}).join("") || `<p class="empty">No key moments in this thread yet.</p>`}
+        </div>
+      </section>
+      <section>
+        <div class="colh th"><h2>Threads</h2>${state.filter?`<button class="btn" id="clearF" style="padding:6px 12px;font-size:13px">Show all</button>`:`<span class="muted" style="font-size:13px">tap to filter</span>`}</div>
+        <div class="threads">
+          ${shown.map(t=>`
+          <div class="trow" style="--c:var(--${t.color})">
+            <button class="folder" data-key="${t.key}" aria-pressed="${state.filter===t.key}" type="button" aria-label="${esc(t.name)}, ${t.ids.length} messages">
+              <span class="back"></span><span class="sheet"></span>
+              <span class="front">${svg(ICONS[t.icon]||ICONS.chat)}<span>${esc(t.name)}</span><small>${t.ids.length} msgs</small></span>
+              <span class="dot"></span>
+            </button>
+            <div class="subs">${t.subs.slice(0,3).map(s=>`<div class="chip"><i></i>${esc(s)}</div>`).join("")}</div>
+          </div>`).join("")}
+          ${hidden>0?`<div class="more-threads">+ ${hidden} smaller thread${hidden>1?"s":""} in the Chat tab</div>`:""}
+        </div>
+      </section>
+      <section>
+        <div class="colh o"><h2>Outputs</h2></div>
+        <div class="outs">
+          <button class="obj" data-out="status" type="button"><div class="doc">
+            <h3>Status summary</h3>
+            <div class="lines"><span style="width:92%"></span><span style="width:78%"></span><span style="width:64%"></span></div>
+            <div class="bars">${an.threads.slice(0,6).map(t=>`<span style="height:${Math.round(t.ids.length/maxT*100)}%;background:var(--${t.color})" title="${esc(t.name)}"></span>`).join("")}</div>
+            <div class="osub">Messages per thread · copy for WhatsApp</div>
+          </div></button>
+          <button class="obj" data-out="board" type="button"><div class="win">
+            <div class="chrome"><i style="background:var(--coral)"></i><i style="background:var(--mustard)"></i><i style="background:var(--green)"></i></div>
+            <div class="body">${lanes.map(([k,n])=>`<div class="lane"><b>${n}</b>${k}s</div>`).join("")}</div>
+            <div style="padding:0 12px 12px"><h3>Project board</h3><div class="osub">Track every ask until it's done</div></div>
+          </div></button>
+          <button class="obj" data-out="plan" type="button"><div class="env">
+            <span class="seal"></span>
+            <h3>Draft plan</h3><div class="osub">${nextN} next step${nextN===1?"":"s"} · ready to send to the group</div>
+          </div></button>
+        </div>
+      </section>
+    </div>
+  </div></div>`;
+}
+function viewBoard(){
+  const an = state.an;
+  const lanes = [["request","Requests"],["task","Commitments"],["decision","Decisions"],["risk","Risks"]];
+  return `<div class="board">${lanes.map(([k,label])=>{
+    const its = an.items.filter(i=>i.kind===k).sort((a,b)=>(+!!state.done[a.id])-(+!!state.done[b.id]) || b.id-a.id);
+    return `<div class="lanecol"><h3>${label}<span>${its.filter(i=>!state.done[i.id]).length}/${its.length}</span></h3>
+    ${its.map(i=>{const m=byId(i.id); if(!m) return ""; const t=threadOf(i.id); return `<div class="bcard ${state.done[i.id]?"done":""}" style="--c:var(--${t?.color||"plum"})">
+      <div class="btxt">${esc(i.text)}</div>
+      <div class="bfoot"><span>${esc(i.owner||m.author)}${i.due?` · <span class="due">${esc(i.due)}</span>`:""}<br><span class="mono">${fmtDay(m.t)} ${fmtTime(m.t)}</span></span>
+      ${k==="decision"?"":`<label><input type="checkbox" data-done="${i.id}" ${state.done[i.id]?"checked":""}> ${k==="risk"?"Resolved":"Done"}</label>`}</div>
+    </div>`}).join("") || `<p class="empty">Nothing here yet.</p>`}</div>`;
+  }).join("")}</div>`;
+}
+function viewPeople(){
+  const m = state.msgs, an = state.an;
+  const byP = {}; m.forEach(x=>{(byP[x.author] ||= {n:0,media:0,last:x.t}); byP[x.author].n++; if(x.media) byP[x.author].media++; byP[x.author].last=x.t;});
+  const max = Math.max(...Object.values(byP).map(p=>p.n));
+  const days = {}; m.forEach(x=>{const k=x.t.toDateString(); days[k]=(days[k]||0)+1});
+  const dayKeys = Object.keys(days).slice(-31), dmax = Math.max(...dayKeys.map(k=>days[k]));
+  return `<div class="activity"><h3>Messages per day</h3><div class="acts">${dayKeys.map(k=>{const d=new Date(k);return `<div><em>${days[k]}</em><span style="height:${Math.max(4,days[k]/dmax*80)}%"></span><small>${d.getDate()}/${d.getMonth()+1}</small></div>`}).join("")}</div></div>
+  <div class="people">${Object.entries(byP).sort((a,b)=>b[1].n-a[1].n).map(([name,p])=>{
+    const kinds = {}; an.items.forEach(i=>{ if(byId(i.id)?.author===name) kinds[i.kind]=(kinds[i.kind]||0)+1 });
+    const owes = an.items.filter(i=>i.owner===name && (i.kind==="request"||i.kind==="task") && !state.done[i.id]).length;
+    const c = personColor(name);
+    return `<div class="pcard" style="--c:var(--${c})">
+      <div class="prow"><span class="ball">${esc(initials(name))}</span><div><h3>${esc(name)}</h3><div class="muted mono" style="font-size:12px">last ${fmtDay(p.last)} ${fmtTime(p.last)}</div></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:13px"><span>${p.n} messages</span><span class="muted">${p.media} photos</span></div><div class="meter"><span style="width:${p.n/max*100}%"></span></div></div>
+      <div class="pkinds">${Object.entries(kinds).map(([k,n])=>`<span class="kind k-${k}">${n} ${k}${n>1?"s":""}</span>`).join("") || `<span class="muted" style="font-size:13px">No tagged moments</span>`}</div>
+      <div style="font-size:13px">${owes?`<b>${owes}</b> open item${owes>1?"s":""} assigned`:`<span class="muted">Nothing open</span>`}</div>
+    </div>`;}).join("")}</div>`;
+}
+function viewChat(){
+  const q = state.q.toLowerCase(); const kindBy = {}; state.an.items.forEach(i=>kindBy[i.id]=i.kind);
+  let lastDay = ""; const rows = [];
+  state.msgs.filter(m=>!q || m.text.toLowerCase().includes(q) || m.author.toLowerCase().includes(q)).forEach(m=>{
+    const day = fmtDay(m.t); if (day!==lastDay){ rows.push(`<div class="daysep">${day}</div>`); lastDay=day; }
+    const t = threadOf(m.id);
+    rows.push(`<div class="msg" style="--c:var(--${t?.color||"plum"})"><div><div class="who">${esc(m.author)}</div><div class="when mono">${fmtTime(m.t)}</div></div>
+      <div style="min-width:0"><div class="what">${m.text?esc(m.text):`<span class="muted">Photo or file</span>`}</div><div class="tags">${t?`<span class="kind" style="background:color-mix(in oklab,var(--c) 25%,transparent)">${esc(t.name)}</span>`:""}${kindTag(kindBy[m.id])}${m.media&&m.text?kindTag("photo"):""}</div></div></div>`);
+  });
+  return `<input class="search" id="search" type="search" placeholder="Search messages or people" value="${esc(state.q)}" aria-label="Search messages"><div class="chat">${rows.join("") || `<p class="empty">No messages match.</p>`}</div>`;
+}
+
+function render(){
+  header();
+  document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected", b.dataset.view===state.view));
+  const v = $("#view");
+  v.innerHTML = state.view==="map"?viewMap():state.view==="board"?viewBoard():state.view==="people"?viewPeople():viewChat();
+  if (state.view==="map") requestAnimationFrame(drawWires);
+}
+
+/* ---------- wires ---------- */
+function rel(el, root){ let x=0,y=0,n=el; while(n && n!==root){ x+=n.offsetLeft; y+=n.offsetTop; n=n.offsetParent; } return n===root?{x,y,w:el.offsetWidth,h:el.offsetHeight}:null; }
+function curve(a,b,color,dim,arrow){
+  const dx = Math.max(40,(b.x-a.x)*.55);
+  let s = `<path class="${dim?"dim":""}" stroke="var(--${color})" d="M${a.x},${a.y} C${a.x+dx},${a.y} ${b.x-dx},${b.y} ${b.x},${b.y}"/>`;
+  if (arrow) s += `<polygon class="${dim?"dim":""}" fill="var(--${color})" opacity=".85" points="${b.x-11},${b.y-7} ${b.x+1},${b.y} ${b.x-11},${b.y+7}"/>`;
+  return s;
+}
+function drawWires(){
+  const stage = $("#stage"), w = $("#wires"); if (!stage || !w) return;
+  if (getComputedStyle(w).display==="none"){ w.innerHTML=""; return; }
+  let out = "";
+  document.querySelectorAll(".tcard").forEach(c=>{
+    const f = document.querySelector(`.folder[data-key="${c.dataset.thread}"]`); if (!f) return;
+    const a = rel(c,stage), b = rel(f.querySelector(".dot"),stage); if(!a||!b) return;
+    const t = state.an.threads.find(x=>x.key===c.dataset.thread);
+    out += curve({x:a.x+a.w,y:a.y+a.h/2},{x:b.x+b.w/2,y:b.y+b.h/2},t.color,false,false);
+  });
+  const subs = [...document.querySelectorAll(".subs")], objs = [...document.querySelectorAll(".obj")];
+  objs.forEach((o,i)=>{
+    const s = subs[Math.min(subs.length-1, Math.round(i*(subs.length-1)/Math.max(1,objs.length-1)))]; if (!s) return;
+    const a = rel(s,stage), b = rel(o,stage); if(!a||!b) return;
+    const color = getComputedStyle(s.parentElement).getPropertyValue("--c").match(/--(\w+)/)?.[1] || "teal";
+    out += curve({x:a.x+a.w+4,y:a.y+a.h/2},{x:b.x-6,y:b.y+Math.min(60,b.h/2)},color,false,true);
+  });
+  w.innerHTML = out;
+}
+
+/* ---------- outputs ---------- */
+function nextSteps(){
+  return state.an.next?.length ? state.an.next :
+    state.an.items.filter(i=>(i.kind==="request"||i.kind==="task"||i.kind==="risk") && !state.done[i.id]).slice(-8)
+      .map(i=>`${i.owner?i.owner+": ":""}${i.kind==="risk"?"Resolve – ":""}${i.text}${i.due?` (${i.due})`:""}`);
+}
+function statusText(){
+  const an = state.an, it = k => an.items.filter(i=>i.kind===k && !state.done[i.id]);
+  const list = (arr,f) => arr.length ? arr.map(f).join("\n") : "• None";
+  return `*${state.name} · status*\n${fmtDay(new Date())}\n\n${an.summary}\n\n*Decided*\n${list(an.items.filter(i=>i.kind==="decision"),i=>`• ${i.text}`)}\n\n*Open asks*\n${list([...it("request"),...it("task")],i=>`• ${i.text}${i.owner?` – ${i.owner}`:""}${i.due?` (${i.due})`:""}`)}\n\n*Risks*\n${list(it("risk"),i=>`• ${i.text}`)}`;
+}
+function planText(){
+  const steps = nextSteps();
+  return `*Next steps · ${state.name}*\n\n${steps.length?steps.map((s,i)=>`${i+1}. ${s}`).join("\n"):"Nothing open. Nice work."}\n\nReply here if anything is missing.`;
+}
+function openOutput(kind){
+  if (kind==="board"){ state.view="board"; render(); return; }
+  const text = kind==="status"?statusText():planText();
+  modal(`<div class="mhead"><div><h2>${kind==="status"?"Status summary":"Draft plan"}</h2><p class="muted" style="margin:0">Formatted for WhatsApp: *bold* shows as bold when you paste it.</p></div><button class="icon-btn" data-close aria-label="Close">${svg('<path d="M6 6l12 12M18 6 6 18"/>')}</button></div>
+    <pre class="out" id="outText">${esc(text)}</pre>
+    <button class="btn wa" id="copyOut">Copy text</button>`);
+  $("#copyOut").onclick = () => copy(text, $("#outText"));
+}
+function copy(text, el){
+  navigator.clipboard.writeText(text).then(()=>toast("Copied")).catch(()=>{
+    const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    toast("Text selected. Press Ctrl+C to copy");
+  });
+}
+
+/* ---------- modal / toast ---------- */
+function modal(html){ $("#modal").innerHTML = html; $("#overlay").hidden = false; $("#modal").querySelector("button,textarea,input")?.focus(); }
+function closeModal(){ $("#overlay").hidden = true; $("#modal").innerHTML=""; if (aiCtl) aiCtl.abort(); }
+let toastT; function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>el.hidden=true,2600); }
+
+function openConnect(){
+  modal(`<div class="mhead"><div><h2>Connect a WhatsApp chat</h2><p class="muted" style="margin:0">Bring in a group or one-to-one chat. Threadline sorts it into threads, decisions, asks and risks.</p></div><button class="icon-btn" data-close aria-label="Close">${svg('<path d="M6 6l12 12M18 6 6 18"/>')}</button></div>
+  <div class="ways">
+    <div class="way"><h3>Import an export</h3>
+      <ol><li>Open the chat in WhatsApp</li><li>Tap the name, then <b>Export chat</b></li><li>Choose <b>Without media</b></li><li>Drop the .zip or .txt here</li></ol>
+      <label class="drop" id="drop" for="file">Drop file or click to choose</label>
+      <input id="file" type="file" accept=".txt,.zip,text/plain,application/zip" hidden>
+    </div>
+    <div class="way"><h3>Paste messages</h3><p>Copy lines straight from a chat export.</p>
+      <textarea id="paste" placeholder="[27/10/2026, 9:12 AM] Daniel: Morning team…"></textarea>
+      <button class="btn" id="pasteGo">Analyze pasted text</button>
+    </div>
+    <div class="way"><span class="soon">Needs setup</span><h3>Live sync</h3>
+      <p>Real-time updates use the WhatsApp Business Platform: a business number, a Meta app, and a small webhook server that forwards new messages here. Personal WhatsApp accounts can't be connected live.</p>
+      <button class="btn" id="useSample">Reload the sample chat</button>
+    </div>
+  </div>
+  <p class="privacy">Your chat is read in this browser and kept only on this device. It goes to Claude only when you press Analyze with Claude.</p>`);
+  const drop = $("#drop"), file = $("#file");
+  file.onchange = () => file.files[0] && importFile(file.files[0]);
+  ["dragenter","dragover"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add("over")}));
+  ["dragleave","drop"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove("over")}));
+  drop.addEventListener("drop",ev=>ev.dataTransfer.files[0] && importFile(ev.dataTransfer.files[0]));
+  $("#pasteGo").onclick = () => useText($("#paste").value, "Pasted chat");
+  $("#useSample").onclick = () => { store.del("chat"); load(SAMPLE, SAMPLE_NAME, true); closeModal(); render(); toast("Sample chat loaded"); };
+}
+async function importFile(f){
+  try{
+    let text, name = f.name.replace(/\.(txt|zip)$/i,"").replace(/^WhatsApp Chat (with|-)\s*/i,"").trim() || "WhatsApp chat";
+    if (/\.zip$/i.test(f.name)){
+      if (!window.JSZip) return toast("Zip support didn't load. Unzip and drop the .txt instead");
+      const zip = await JSZip.loadAsync(f);
+      const entry = Object.values(zip.files).find(z=>/_chat\.txt$/i.test(z.name)) || Object.values(zip.files).find(z=>/\.txt$/i.test(z.name));
+      if (!entry) return toast("No chat .txt inside that zip");
+      text = await entry.async("string");
+    } else text = await f.text();
+    useText(text, name);
+  }catch(e){ toast("Couldn't read that file. Try the .txt export"); }
+}
+function useText(text, name){
+  if (!load(text, name, false)) return toast("No WhatsApp messages found. Check it's an exported chat");
+  store.set("chat", {text, name}); store.del("analysis");
+  closeModal(); state.view="map"; render(); toast(`${state.msgs.length} messages imported`);
+}
+
+/* ---------- Claude analysis ---------- */
+let sampleFn = null, aiCtl = null;
+async function analyzeWithClaude(){
+  if (!sampleFn) return;
+  aiCtl = new AbortController();
+  const msgs = state.msgs.slice(-700);
+  let body = msgs.map(m=>`#${m.id} [${m.t.toISOString().slice(0,16).replace("T"," ")}] ${m.author}: ${m.text?m.text.slice(0,280).replace(/\n/g," "):"(photo)"}${m.media&&m.text?" (photo)":""}`).join("\n");
+  if (body.length>150000) body = body.slice(-150000);
+  const prompt = `You are a project manager reading a WhatsApp group chat for a design and build project. Organize it.
+
+Reply with ONLY a JSON object of this shape:
+{"summary":"2-3 plain sentences on where the project stands",
+ "threads":[{"name":"2-3 word topic","subtopics":["1-2 words","1-2 words","1-2 words"],"ids":[message numbers]}],
+ "items":[{"id":message number,"kind":"decision|request|task|risk","text":"short rewrite, max 18 words","owner":"person responsible or empty","due":"due date text or empty"}],
+ "next":["Owner: next step (due)"]}
+
+Rules: 3 to 5 threads; every message number belongs to exactly one thread. A request is something someone asked for that still needs doing; a task is something someone committed to; a risk is a problem, delay or defect. Only include items the chat actually supports. Up to 8 next steps, most urgent first. Use names exactly as written in the chat.
+
+Chat (#number [date time] author: text):
+${body}`;
+  modal(`<div class="think"><span class="spin"></span><div><h2 style="font-size:22px">Claude is reading ${msgs.length} messages</h2><p class="muted" style="margin:0" id="aiNote">Sorting threads, decisions and open asks. This can take up to a minute.</p></div></div><div style="margin-top:16px"><button class="btn" id="aiStop">Stop</button></div>`);
+  $("#aiStop").onclick = closeModal;
+  try{
+    const r = await sampleFn.json(prompt, {signal:aiCtl.signal, modelTier:"default"});
+    const valid = new Set(state.msgs.map(m=>m.id)), seen = new Set();
+    const threads = (r.threads||[]).slice(0,6).map((t,i)=>{
+      const ids = (t.ids||[]).map(Number).filter(id=>valid.has(id) && !seen.has(id)); ids.forEach(id=>seen.add(id));
+      const n = String(t.name||"Thread "+(i+1));
+      const icon = /concrete|site|build|construct|install/i.test(n)?"block":/furnit|chair|sofa|supplier/i.test(n)?"chair":/design|render|visual|style|material/i.test(n)?"palette":/budget|cost|quote|money|pay/i.test(n)?"coin":/schedul|time|date|plan/i.test(n)?"calendar":"chat";
+      return {key:"c"+i, name:n, icon, ids, subs:(t.subtopics||[]).map(String).slice(0,3), color:COLORS[i%COLORS.length]};
+    }).filter(t=>t.ids.length);
+    const rest = state.msgs.filter(m=>!seen.has(m.id)).map(m=>m.id);
+    if (rest.length) threads.push({key:"cx",name:"Other",icon:"chat",ids:rest,subs:["Updates"],color:"plum"});
+    threads.sort((a,b)=>b.ids.length-a.ids.length);
+    const items = (r.items||[]).filter(i=>valid.has(Number(i.id)) && ["decision","request","task","risk"].includes(i.kind))
+      .map(i=>({id:Number(i.id),kind:i.kind,text:String(i.text||""),owner:String(i.owner||""),due:String(i.due||"")})).sort((a,b)=>a.id-b.id);
+    if (!threads.length) throw {code:"invalid_json"};
+    state.an = {source:"claude", summary:String(r.summary||""), threads, items, next:(r.next||[]).map(String).slice(0,8)};
+    state.filter=null; state.page=0;
+    store.set("analysis",{key:chatKey(), an:state.an});
+    aiCtl=null; closeModal(); render(); toast("Claude analysis ready");
+  }catch(e){
+    aiCtl=null;
+    if (e?.code==="cancelled") return;
+    closeModal();
+    const copyFor = {not_granted:"Claude wasn't allowed for this page. Keyword analysis stays on.",sampling_disabled:"Claude isn't available for this account.",rate_limited:"Too many requests right now. Try again in a few minutes.",prompt_too_large:"This chat is too long to send at once.",invalid_json:"Claude's answer couldn't be read. Try again.",session_expired:"Sign in to Claude again, then retry."};
+    toast(copyFor[e?.code] || "Claude couldn't finish. Try again.");
+    if (["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(e?.code)) $("#aiBtn").hidden = true;
+  }
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", e=>{
+  const t = e.target;
+  if (t.closest("[data-close]") || t.id==="overlay") return closeModal();
+  const tab = t.closest(".tab"); if (tab){ state.view = tab.dataset.view; render(); return; }
+  const f = t.closest(".folder"); if (f){ state.filter = state.filter===f.dataset.key?null:f.dataset.key; state.page=0; render(); return; }
+  if (t.closest("#clearF")){ state.filter=null; render(); return; }
+  if (t.closest("#older")){ state.page++; render(); return; }
+  if (t.closest("#newer")){ state.page=Math.max(0,state.page-1); render(); return; }
+  const o = t.closest(".obj"); if (o){ openOutput(o.dataset.out); return; }
+  const c = t.closest(".tcard"); if (c){ state.q = byId(+c.dataset.id).text.slice(0,30); state.view="chat"; render(); return; }
+});
+document.addEventListener("change", e=>{
+  const id = e.target.dataset?.done; if (!id) return;
+  if (e.target.checked) state.done[id]=1; else delete state.done[id];
+  store.set("done:"+chatKey(), state.done); render();
+});
+document.addEventListener("input", e=>{
+  if (e.target.id!=="search") return;
+  state.q = e.target.value; const pos = e.target.selectionStart; render();
+  const s = $("#search"); s.focus(); s.setSelectionRange(pos,pos);
+});
+document.addEventListener("keydown", e=>{ if (e.key==="Escape" && !$("#overlay").hidden) closeModal(); });
+$("#connectBtn").onclick = openConnect;
+$("#aiBtn").onclick = analyzeWithClaude;
+let rT; addEventListener("resize",()=>{clearTimeout(rT); rT=setTimeout(drawWires,80)});
+const fine = matchMedia("(pointer:fine)").matches && !matchMedia("(prefers-reduced-motion:reduce)").matches;
+document.addEventListener("pointermove", e=>{
+  if (!fine) return; const s = $("#stage"); if (!s) return;
+  const r = s.getBoundingClientRect(); if (e.clientY<r.top-80||e.clientY>r.bottom+80){ s.style.setProperty("--rx","0deg"); s.style.setProperty("--ry","0deg"); return; }
+  const px = (e.clientX-r.left)/r.width-.5, py = (e.clientY-r.top)/r.height-.5;
+  s.style.setProperty("--ry",(px*3).toFixed(2)+"deg"); s.style.setProperty("--rx",(-py*2.4).toFixed(2)+"deg");
+});
+
+/* ---------- boot ---------- */
+const savedChat = store.get("chat");
+if (!(savedChat && load(savedChat.text, savedChat.name, false))) load(SAMPLE, SAMPLE_NAME, true);
+render();
+document.fonts?.ready.then(drawWires);
+(async()=>{ try{ sampleFn = await window.claude?.use?.("sample"); }catch(e){ sampleFn=null; } if (sampleFn) $("#aiBtn").hidden = false; })();
+</script>
+
+</body></html>
