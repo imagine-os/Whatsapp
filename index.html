@@ -51,20 +51,26 @@ h1,h2,h3{font-family:var(--f-display);font-weight:600;margin:0;text-wrap:balance
 .btn.sm{padding:7px 12px;font-size:13px;border-radius:11px}
 .btn.ghost{background:none;box-shadow:none;color:var(--muted)}
 .top-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-.head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px 32px;align-items:end;margin:28px 0 20px}
+.head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 32px;align-items:end;margin:24px 0 18px}
 .head-l{min-width:0}
-.head h1{font-size:clamp(28px,3.6vw,42px);line-height:1.05;letter-spacing:-.02em;margin-top:4px}
-.head p{margin:8px 0 0;color:var(--muted);max-width:62ch}
+.head h1{font-size:clamp(26px,3.4vw,40px);line-height:1.08;letter-spacing:-.02em;margin-top:4px;overflow-wrap:anywhere}
+.head p{margin:8px 0 0;color:var(--muted);max-width:62ch;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px}
+.head p .m{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.head p .m svg{width:14px;height:14px;opacity:.7}
 .pills{display:flex;gap:8px;flex-wrap:wrap}
-.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 10px;border-radius:999px;background:var(--surface);box-shadow:var(--clay-sm);white-space:nowrap}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 10px;border-radius:999px;background:var(--surface);box-shadow:var(--clay-sm);white-space:nowrap;border:0}
 .pill i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
-.stats{display:grid;grid-template-columns:repeat(5,minmax(92px,auto));gap:10px}
-.stat{background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:16px;box-shadow:var(--clay-sm);padding:11px 14px;border:0;text-align:left;transition:transform .15s,box-shadow .15s}
+button.pill:hover{box-shadow:var(--clay)}
+.pill u{text-decoration:none;color:var(--teal);font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(96px,auto));gap:10px}
+.stat{background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:16px;box-shadow:var(--clay-sm);padding:11px 14px;border:0;text-align:left;transition:transform .15s,box-shadow .15s;min-width:0}
+button.stat{position:relative}
 button.stat:hover{transform:translateY(-1px);box-shadow:var(--clay)}
 button.stat[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--k),var(--clay-sm)}
 .stat b{display:block;font-family:var(--f-display);font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
 .stat span{display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;white-space:nowrap}
 .stat .dot{width:8px;height:8px;border-radius:50%;flex:none}
+div.stat{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)}
 
 /* one sticky bar: views on the left, this view's controls on the right */
 .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap;justify-content:space-between;padding:8px;margin:0 -8px 14px;border-radius:20px;background:color-mix(in oklab,var(--bg) 88%,transparent);backdrop-filter:blur(10px)}
@@ -83,9 +89,15 @@ button.stat[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--k),var(--clay-
 .chip .ck svg{width:10px;height:10px}
 .chip[aria-pressed="false"]{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--muted)}
 .chip[aria-pressed="false"] .ck{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line);color:transparent}
+/* single-choice chips (topic picker): a colour dot, filled when chosen */
+.chip.radio .rd{width:10px;height:10px;border-radius:50%;background:var(--k);flex:none}
+.chip.radio[aria-pressed="true"]{background:color-mix(in oklab,var(--k) 24%,var(--surface-hi));box-shadow:inset 0 0 0 2px color-mix(in oklab,var(--k) 70%,transparent)}
+.chip.radio[aria-pressed="false"] .rd{background:transparent;box-shadow:inset 0 0 0 2px var(--k)}
+.chip .n{font-family:var(--f-mono);font-size:11px;color:var(--muted);font-weight:500}
 .link{border:0;background:none;color:var(--teal);font-weight:700;font-size:13px;padding:4px 2px;text-decoration:underline;text-underline-offset:3px}
 .seg{display:inline-flex;padding:3px;border-radius:12px;background:var(--desk);box-shadow:inset 0 1px 3px var(--lo)}
-.seg button{border:0;background:none;padding:5px 11px;border-radius:9px;font-size:13px;font-weight:600;color:var(--muted)}
+.seg{flex:none}
+.seg button{white-space:nowrap;border:0;background:none;padding:5px 11px;border-radius:9px;font-size:13px;font-weight:600;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--surface-hi);color:var(--ink);box-shadow:var(--clay-sm)}
 .tools .search{width:260px;max-width:100%;padding:8px 12px}
 .spacer{flex:1}
@@ -112,8 +124,10 @@ button.stat[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--k),var(--clay-
 .n-thread{width:210px;border-radius:18px;padding:12px 14px;background:linear-gradient(170deg,color-mix(in oklab,var(--c) 82%,white),var(--c));color:var(--on-accent);box-shadow:var(--clay)}
 .n-thread h3{font-size:16px;line-height:1.15}
 .n-thread small{display:block;font-size:12px;font-weight:600;opacity:.75;margin-top:2px}
-.n-group{width:auto;min-width:178px;display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:14px}
-.n-group b{font-size:14px;font-weight:700;flex:1}
+.n-group{width:214px;display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:14px}
+.n-group b{font-size:14px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.n-group .avs{display:flex;flex:none}
+.n-root .rsub{font-family:var(--f-body);font-size:13px;font-weight:600;opacity:.9;margin-top:2px}
 .n-group .cnt{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
 .n-group .sw{width:12px;height:12px;border-radius:4px;flex:none}
 .n-item{width:310px;padding:10px 12px 10px 14px;border-left:4px solid var(--k)}
@@ -130,7 +144,8 @@ button.stat[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--k),var(--clay-
 .side-l .tog{left:-13px;right:auto}
 .n-thread.side-r,.n-group.side-r{padding-right:24px}
 .n-thread.side-l,.n-group.side-l{padding-left:24px}
-.n-group .av{width:20px;height:20px;font-size:9px;margin-left:-6px;box-shadow:0 0 0 2px var(--surface)}
+.n-group .av{width:20px;height:20px;font-size:9px;box-shadow:0 0 0 2px var(--surface)}
+.n-group .av + .av{margin-left:-6px}
 .tog{position:absolute;right:-13px;top:50%;width:26px;height:26px;margin-top:-13px;border-radius:50%;border:0;background:var(--surface-hi);box-shadow:var(--clay-sm);font-size:14px;font-weight:700;line-height:1;display:grid;place-items:center;color:var(--ink);padding:0}
 .mm-ctl{position:absolute;right:14px;bottom:14px;display:flex;flex-direction:column;gap:6px;z-index:3}
 .mm-ctl button{width:38px;height:38px;border-radius:12px;border:0;background:var(--surface-hi);box-shadow:var(--clay-sm);font-size:18px;font-weight:700;display:grid;place-items:center}
@@ -138,9 +153,17 @@ button.stat[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--k),var(--clay-
 .dim{opacity:.18!important}
 
 /* detail panel */
-.panel{position:absolute;top:14px;right:14px;bottom:14px;width:min(380px,calc(100% - 28px));background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:22px;box-shadow:var(--clay),0 30px 60px -30px var(--shade);padding:18px;overflow:auto;z-index:4;animation:slide .35s cubic-bezier(.2,.9,.3,1) backwards}
+/* one detail drawer for every view: right side on desktop, bottom sheet on phones */
+.panel{position:fixed;top:16px;right:16px;width:min(392px,calc(100vw - 32px));max-height:calc(100vh - 32px);background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:22px;box-shadow:var(--clay),0 30px 60px -20px var(--shade);padding:20px;overflow:auto;overscroll-behavior:contain;z-index:40;animation:slide .35s cubic-bezier(.2,.9,.3,1) backwards}
 @keyframes slide{from{transform:translateX(30px);opacity:0}}
-.panel h3{font-size:20px;margin:6px 0 10px}
+.panel .ptags{display:flex;gap:6px;flex-wrap:wrap;padding-right:40px}
+.panel h3{font-size:19px;line-height:1.3;margin:10px 0 4px;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.panel .pacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.ctx{display:flex;flex-direction:column;gap:6px}
+.ctx .cm{font-size:13px;padding:8px 11px;border-radius:12px;background:var(--bg);color:var(--muted);overflow-wrap:anywhere}
+.ctx .cm b{color:var(--ink);font-weight:700}
+.ctx .cm.me{background:color-mix(in oklab,var(--k,var(--teal)) 14%,var(--bg));color:var(--ink);box-shadow:inset 3px 0 0 var(--k,var(--teal))}
+.ctx .cm .mono{font-size:10.5px;margin-left:4px}
 .quote{background:var(--bg);border-radius:14px;padding:12px 14px;font-size:14px;box-shadow:inset 0 2px 4px var(--lo);white-space:pre-wrap}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;margin:14px 0}
 .kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:600}
@@ -162,6 +185,9 @@ button.stat[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--k),var(--clay-
 .fcard.is-done .tx{text-decoration:line-through}
 .flow-svg{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:0}
 .flow-svg path{fill:none;stroke:var(--muted);stroke-width:2;opacity:.55}
+.fcard .lane-l{display:none;margin-bottom:6px}
+.fcard .tx,.tcard .tx,.act .tx,.n-item .tx,.quote,.rowlink{overflow-wrap:anywhere}
+.fcard:hover{box-shadow:var(--clay)}
 .step-n{position:absolute;left:-10px;top:-10px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:11px;font-weight:700;display:grid;place-items:center}
 
 /* actions */
@@ -189,7 +215,7 @@ button.stat[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--k),var(--clay-
 /* tasks: kanban, grid, list */
 .seg-ic button{display:inline-flex;align-items:center;gap:6px}
 .seg-ic svg{width:14px;height:14px}
-.kanban{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:14px;padding:18px;overflow-x:auto;align-items:start}
+.kanban{display:grid;grid-template-columns:repeat(var(--kc,4),minmax(240px,1fr));gap:14px;padding:18px;overflow-x:auto;align-items:start}
 .kcol{background:color-mix(in oklab,var(--desk) 60%,var(--bg));border-radius:20px;padding:12px;min-height:240px;box-shadow:inset 0 1px 3px var(--lo);transition:box-shadow .15s,background .15s}
 .kcol.over{background:color-mix(in oklab,var(--teal) 10%,var(--bg));box-shadow:inset 0 0 0 2px var(--teal)}
 .kh{display:flex;align-items:center;gap:8px;padding:4px 4px 0}
@@ -208,6 +234,9 @@ button.stat[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--k),var(--clay-
 .tc-top .tx{font-size:14px;line-height:1.4}
 .tc-tags{display:flex;gap:6px;flex-wrap:wrap;padding-left:32px}
 .tc-foot{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;padding-left:32px;margin-top:auto}
+.tc-top .rowlink{line-height:1.4;font-size:14px}
+.needs{border:0;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:700;color:color-mix(in oklab,var(--todo) 60%,var(--ink));background:transparent;box-shadow:inset 0 0 0 1.5px color-mix(in oklab,var(--todo) 55%,transparent)}
+.needs:hover{background:color-mix(in oklab,var(--todo) 14%,transparent)}
 .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:20px}
 .tablewrap{overflow-x:auto;border-radius:16px;background:var(--surface);box-shadow:var(--clay-sm)}
 .tlist{width:100%;border-collapse:collapse;font-size:14px;min-width:820px}
@@ -220,6 +249,7 @@ button.stat[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--k),var(--clay-
 .sortb[aria-sort="ascending"],.sortb[aria-sort="descending"]{color:var(--ink)}
 .rowlink{border:0;background:none;padding:0;text-align:left;font:inherit;color:var(--ink);cursor:pointer}
 .rowlink:hover{color:var(--teal);text-decoration:underline}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .who{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
 
 /* chat + send */
@@ -229,13 +259,22 @@ button.stat[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--k),var(--clay-
 .msg .who{font-weight:700;font-size:13px}
 .msg .when{font-size:11px;color:var(--muted)}
 .msg .what{font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.flash{animation:flash 2.4s ease-out}
+@keyframes flash{0%,40%{box-shadow:0 0 0 3px var(--teal),var(--clay-sm)}}
+.chatcol{max-width:920px;margin:0 auto}
+.msg.has-item{cursor:pointer}
+.msg.has-item:hover{box-shadow:var(--clay)}
 .daysep{font-family:var(--f-display);font-size:15px;color:var(--muted);margin:12px 0 6px}
 .ogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:20px}
 .ocard{background:var(--surface);border-radius:20px;box-shadow:var(--clay-sm);padding:16px;display:flex;flex-direction:column;gap:10px}
+.oacts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.oacts .btn{justify-content:center;text-decoration:none;color:inherit;padding:10px 10px;font-size:14px}
+.oacts .btn.wa{color:#fff}
 .ocard pre{margin:0;white-space:pre-wrap;font:13.5px/1.55 var(--f-body);background:var(--bg);border-radius:12px;padding:12px;box-shadow:inset 0 2px 4px var(--lo);max-height:380px;overflow:auto;flex:1}
 
 /* modal */
 .overlay{position:fixed;inset:0;background:color-mix(in oklab,var(--bg) 60%,transparent);backdrop-filter:blur(6px);z-index:50;display:grid;place-items:center;padding:16px}
+.modal:focus{outline:none}
 .modal{width:min(780px,100%);max-height:calc(100vh - 32px);overflow:auto;background:linear-gradient(180deg,var(--surface-hi),var(--surface));border-radius:26px;box-shadow:var(--clay),0 40px 80px -30px var(--shade);padding:24px}
 .modal h2{font-size:26px}
 .ways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
@@ -257,7 +296,9 @@ textarea{width:100%;min-height:160px;border:0;border-radius:12px;padding:10px;fo
 .err{color:var(--risk);font-size:13px;margin-top:8px}
 .mfoot{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}
 .privacy{font-size:12px;color:var(--muted);margin-top:12px}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;z-index:60;max-width:calc(100% - 32px)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;z-index:60;max-width:min(560px,calc(100% - 32px));display:flex;align-items:center;gap:12px;box-shadow:0 12px 30px -10px var(--shade)}
+.tundo{border:0;background:none;color:var(--mustard);font-weight:800;padding:2px 4px;text-decoration:underline;text-underline-offset:3px;flex:none}
+.mapnote{position:absolute;left:50%;top:16px;transform:translateX(-50%);z-index:3;background:var(--surface-hi);box-shadow:var(--clay-sm);border-radius:14px;padding:10px 14px;font-size:13px;max-width:calc(100% - 32px);text-align:center}
 .spin{width:38px;height:38px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--coral);animation:sp 1s linear infinite;flex:none}
 @keyframes sp{to{transform:rotate(360deg)}}
 .reveal{animation:rv .5s cubic-bezier(.2,.8,.3,1) backwards;animation-delay:var(--d,0ms)}
@@ -274,16 +315,50 @@ textarea{width:100%;min-height:160px;border:0;border-radius:12px;padding:10px;fo
   .ogrid{grid-template-columns:1fr}
 }
 @media (max-width:640px){
-  .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .top-r{justify-content:flex-start;width:100%}
-  .tabs{display:flex;width:100%;overflow-x:auto;flex-wrap:nowrap}
-  .tab{padding:8px 10px;white-space:nowrap;flex:none}
+  .wrap{padding-top:14px}
+  .brand small{display:none}
+  .mark{width:36px;height:36px;border-radius:12px}
+  .top{gap:10px}
+  .top-r{display:contents}
+  .top-r .btn{padding:8px 13px;font-size:14px;order:1}
+  .top-r .btn.wa{margin-left:auto}
+  .top-r .btn .ls{display:none}
+  .pills{order:3;width:100%}
+  #acct{order:1}
+  .head{margin:16px 0 12px;gap:12px}
+  .stats{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  .stat{padding:8px 8px 7px;border-radius:13px}
+  .stat b{font-size:19px}
+  .stat span{font-size:9.5px;letter-spacing:.04em;white-space:normal;line-height:1.15;align-items:flex-start;gap:4px}
+  .stat .dot{width:6px;height:6px;margin-top:3px}
+  .bar{padding:6px;margin:0 -6px 10px;gap:8px}
+  .tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));width:100%;padding:4px;gap:2px}
+  .tab{flex-direction:column;gap:3px;padding:7px 2px 6px;font-size:11.5px;white-space:nowrap;justify-content:center}
+  .tab svg{width:18px;height:18px}
+  .tools{width:100%;gap:8px}
+  .tgroup{flex-wrap:nowrap;overflow-x:auto;width:100%;scrollbar-width:none;padding:2px 2px 4px;margin:-2px -2px -4px}
+  .tgroup::-webkit-scrollbar{display:none}
+  .tools .search{width:100%}
   .tsep{display:none}
-  .ways,.howto,.lanes{grid-template-columns:1fr}
+  .ways,.howto{grid-template-columns:1fr}
+  .flow-wrap{padding:16px 14px 16px 20px}
+  .lanes{display:flex;flex-direction:column;gap:18px}
+  .lanes .lane-h{display:none}
+  .fcard .lane-l{display:inline-flex}
+  .kanban{grid-template-columns:repeat(var(--kc,4),82vw);scroll-snap-type:x mandatory;padding:14px;gap:10px;scroll-padding:14px}
+  .kcol{scroll-snap-align:start}
+  .tlist{min-width:0}
+  .tlist .c-topic,.tlist .c-raised,.tlist .c-type{display:none}
+  .tlist td,.tlist th{padding:10px 8px}
+  .pad{padding:14px}
+  .owners{padding:14px}
+  .ogrid{padding:14px}
+  .oacts{grid-template-columns:1fr}
   .preview{grid-template-columns:1fr 1fr}
   .msg{grid-template-columns:1fr;gap:2px}
-  .mm{height:62vh}
   .mm-hint{display:none}
+  .panel{top:auto;left:0;right:0;bottom:0;width:100%;max-height:82vh;border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));animation-name:sheet}
+  @keyframes sheet{from{transform:translateY(40px);opacity:0}}
   .stat{min-width:0;flex:1 1 30%}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -299,7 +374,7 @@ textarea{width:100%;min-height:160px;border:0;border-radius:12px;padding:10px;fo
       <div class="pills" id="pills"></div>
       <div id="acct"></div>
       <button class="btn ai" data-act="claude" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></svg>Sort with Claude</button>
-      <button class="btn wa" data-act="import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-11.8 7L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg>Connect WhatsApp</button>
+      <button class="btn wa" data-act="import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-11.8 7L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg><span>Connect<span class="ls"> WhatsApp</span></span></button>
     </div>
   </header>
   <section class="head">
@@ -312,6 +387,7 @@ textarea{width:100%;min-height:160px;border:0;border-radius:12px;padding:10px;fo
   </nav>
   <main id="view"></main>
 </div>
+<div id="detail"></div>
 <div id="layer"></div>
 <div class="toast" id="toast" hidden></div>
 
@@ -394,7 +470,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const store = {
   get(k){try{return JSON.parse(localStorage.getItem("threadline3."+k))}catch(e){return null}},
-  set(k,v){try{localStorage.setItem("threadline3."+k,JSON.stringify(v))}catch(e){}},
+  set(k,v){try{localStorage.setItem("threadline3."+k,JSON.stringify(v)); return true}catch(e){return false}},
   del(k){try{localStorage.removeItem("threadline3."+k)}catch(e){}}
 };
 const fmtTime = d => d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
@@ -414,6 +490,8 @@ const ICON = {
   list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2" fill="currentColor"/><circle cx="4.5" cy="12" r="1.2" fill="currentColor"/><circle cx="4.5" cy="18" r="1.2" fill="currentColor"/></svg>',
   grid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>',
   send:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg>',
+  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+  wa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
   cam:'<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>'
 };
 
@@ -477,7 +555,8 @@ function localAnalyze(msgs){
     items.push({id:m.id, kind, text:m.text.length>160?m.text.slice(0,157)+"…":m.text, owner, due});
   });
   const c = k => items.filter(i=>i.kind===k).length;
-  const summary = `${msgs.length} messages from ${people.length} people, ${fmtShort(msgs[0].t)} to ${fmtShort(msgs[msgs.length-1].t)}. ${c("request")+c("task")} things to do, ${c("decision")} decisions made and ${c("risk")} risks raised, across ${threads.length} topics.`;
+  const pl = (n, one, many) => `${n.toLocaleString()} ${n===1?one:many}`;
+  const summary = `${pl(msgs.length,"message","messages")} from ${pl(people.length,"person","people")}, ${fmtShort(msgs[0].t)} to ${fmtShort(msgs[msgs.length-1].t)}. ${pl(c("request")+c("task"),"thing","things")} to do, ${pl(c("decision"),"decision","decisions")} made and ${pl(c("risk"),"risk","risks")} raised, across ${pl(threads.length,"topic","topics")}.`;
   return {source:"local", summary, threads, items};
 }
 function entitiesFor(ids){
@@ -539,10 +618,17 @@ const groupOf = i => i.kind==="decision" ? "done" : i.kind==="risk" ? "risk" : "
 function header(){
   const an = state.an, it = an.items;
   $("#title").textContent = state.name;
-  $("#sub").textContent = an.summary;
+  document.title = state.sample ? "Threadline" : `${state.name} · Threadline`;
+  // counts live in the stat tiles; the line under the title says who, when and how fresh
+  const first = state.msgs[0].t, last = state.msgs[state.msgs.length-1].t, np = people().length;
+  const same = fmtShort(first)===fmtShort(last);
+  $("#sub").innerHTML = an.source==="claude" ? esc(an.summary)
+    : `<span class="m">${ICON.people}${np} ${np===1?"person":"people"}</span><span class="m">${ICON.cal}${same?fmtDay(first):`${fmtShort(first)} – ${fmtShort(last)}${first.getFullYear()!==last.getFullYear()?" "+last.getFullYear():""}`}</span><span class="m">${ICON.chat}Last message ${fmtDay(last)}, ${fmtTime(last)}</span>`;
   $("#acct").innerHTML = acctHTML();
-  $("#pills").innerHTML = (state.cloud?`<span class="pill"><i style="background:var(--sky)"></i>Shared with your team</span>`:state.sample?`<span class="pill"><i style="background:var(--mustard)"></i>Sample chat</span>`:`<span class="pill"><i style="background:var(--green)"></i>On this device</span>`)
-    + `<span class="pill"><i style="background:${an.source==="claude"?"var(--coral)":"var(--teal)"}"></i>${an.source==="claude"?"Sorted by Claude":"Sorted on this device"}</span>`;
+  $("#pills").innerHTML = (state.cloud?`<span class="pill"><i style="background:var(--sky)"></i>Shared with your team</span>`
+      : state.sample?`<button class="pill" data-act="import" title="This is example data. Import your own WhatsApp chat."><i style="background:var(--mustard)"></i>Sample chat · <u>use yours</u></button>`
+      : `<span class="pill" title="This chat is stored in this browser only"><i style="background:var(--green)"></i>On this device</span>`)
+    + `<span class="pill" title="${an.source==="claude"?"Topics and tasks were sorted by Claude":"Topics and tasks were found by keywords, in this browser"}"><i style="background:${an.source==="claude"?"var(--coral)":"var(--teal)"}"></i>${an.source==="claude"?"Sorted by Claude":"Sorted on this device"}</span>`;
   const todo = it.filter(i=>groupOf(i)==="todo" && !state.done[i.id]).length, risk = it.filter(i=>i.kind==="risk" && !state.done[i.id]).length;
   $("#stats").innerHTML = [
     [state.msgs.length,"Messages",""], [state.an.threads.length,"Topics",""],
@@ -563,17 +649,19 @@ function tools(){
       <div class="tgroup"><span class="tlabel">Detail</span><div class="seg"><button data-act="collapse" aria-pressed="${folded}">Groups</button><button data-act="expand" aria-pressed="${!folded}">All cards</button></div></div>`;
   }
   if (state.view==="flow" && !state.an.threads.some(t=>t.key===state.flowThread)) state.flowThread = state.an.threads[0].key;
-  if (state.view==="flow") return `<div class="tgroup" role="group" aria-label="Topic"><span class="tlabel">Topic</span>${state.an.threads.map(x=>`<button class="chip" data-flow="${x.key}" aria-pressed="${x.key===state.flowThread}" style="--k:var(--${x.color})">${ck}${esc(x.name)}</button>`).join("")}</div>`;
+  if (state.view==="flow") return `<div class="tgroup" role="radiogroup" aria-label="Topic"><span class="tlabel">Topic</span>${state.an.threads.map(x=>{ const n = state.an.items.filter(i=>threadOf(i.id)===x).length;
+    return `<button class="chip radio" role="radio" data-flow="${x.key}" aria-checked="${x.key===state.flowThread}" aria-pressed="${x.key===state.flowThread}" style="--k:var(--${x.color})"><span class="rd"></span>${esc(x.name)}<span class="n">${n}</span></button>`; }).join("")}</div>`;
   if (state.view==="actions"){
     const L = [["kanban","Kanban",ICON.board],["list","List",ICON.list],["grid","Grid",ICON.grid],["people","By person",ICON.people]];
-    const types = GROUPS.filter(g=>g.key!=="brand");
+    // By person lists work to do, so "Decided" has nothing to filter there
+    const types = GROUPS.filter(g=>g.key!=="brand" && !(state.layout==="people" && g.key==="done"));
     return `<div class="tgroup"><span class="tlabel">Layout</span><div class="seg seg-ic">${L.map(([k,l,ic])=>`<button data-layout="${k}" aria-pressed="${state.layout===k}">${ic}${l}</button>`).join("")}</div></div>
       <span class="tsep"></span>
       <div class="tgroup" role="group" aria-label="Show"><span class="tlabel">Show</span>${types.map(g=>`<button class="chip" data-show="${g.key}" aria-pressed="${state.show[g.key]}" style="--k:var(--${g.color})">${ck}${g.label}</button>`).join("")}</div>
       ${state.layout==="kanban"?"":`<span class="tsep"></span><div class="tgroup"><span class="tlabel">Done</span><div class="seg"><button data-act="hidedone" data-v="0" aria-pressed="${!state.hideDone}">Show</button><button data-act="hidedone" data-v="1" aria-pressed="${!!state.hideDone}">Hide</button></div></div>`}`;
   }
-  if (state.view==="chat") return `<input class="search" id="search" type="search" placeholder="Search messages or people" value="${esc(state.q)}" aria-label="Search messages">`;
-  return `<span class="muted" style="font-size:13px">Copy any draft and paste it into WhatsApp</span>`;
+  if (state.view==="chat") return `<input class="search" id="search" type="search" placeholder="Search messages or people" value="${esc(state.q)}" aria-label="Search messages" autocomplete="off">`;
+  return `<span class="muted" style="font-size:13px">Drafts update as you tick items off. Copy one, or open it straight in WhatsApp.</span>`;
 }
 
 /* ---------- mind map ---------- */
@@ -601,9 +689,10 @@ function nodeHTML(n){
   const tog = (n.children?.length && n.kind!=="root") ? `<span class="tog" aria-hidden="true">${state.collapsed[n.id]?"+":"−"}</span>` : "";
   if (n.kind==="group"){
     const owners = [...new Set(n.children.filter(k=>k.i && !state.done[k.i.id] && k.i.owner).map(k=>k.i.owner))].slice(0,3);
-    return `<button class="node n-group side-${n.side}" data-id="${n.id}" data-toggle="${n.id}" aria-expanded="${!state.collapsed[n.id]}"><span class="sw" style="background:var(--${n.g.color})"></span><b>${n.g.label}</b>${owners.map(avatar).join("")}<span class="cnt">${n.g.key==="todo"?`${n.count} open`:n.total}</span>${tog}</button>`;
+    return `<button class="node n-group side-${n.side}" data-id="${n.id}" data-toggle="${n.id}" aria-expanded="${!state.collapsed[n.id]}"><span class="sw" style="background:var(--${n.g.color})"></span><b>${n.g.label}</b>${owners.length?`<span class="avs">${owners.map(avatar).join("")}</span>`:""}<span class="cnt">${n.g.key==="todo"?`${n.count} open`:n.total}</span>${tog}</button>`;
   }
-  if (n.kind==="root") return `<div class="node n-root" data-id="root"><div class="eyebrow" style="color:#fff;opacity:.8">Project</div><h3>${esc(state.name)}</h3><small>${state.msgs.length} messages · ${people().length} people</small></div>`;
+  // "Reyes Villa · Living Room" reads as a name and a sub-name, so break it at the separator instead of mid-phrase
+  if (n.kind==="root"){ const [a, ...b] = state.name.split(/\s+[·|–-]\s+/); return `<div class="node n-root" data-id="root"><div class="eyebrow" style="color:#fff;opacity:.8">Project</div><h3>${esc(a)}</h3>${b.length?`<div class="rsub">${esc(b.join(" · "))}</div>`:""}<small>${state.msgs.length} message${state.msgs.length===1?"":"s"} · ${people().length} ${people().length===1?"person":"people"}</small></div>`; }
   if (n.kind==="thread") return `<button class="node n-thread side-${n.side}" data-id="${n.id}" data-toggle="${n.id}" style="--c:var(--${n.t.color})" aria-expanded="${!state.collapsed[n.id]}"><h3>${esc(n.t.name)}</h3><small>${n.t.ids.length} message${n.t.ids.length===1?"":"s"}</small>${tog}</button>`;
   if (n.more) return `<button class="node n-entity" data-id="${n.id}" data-gomore="1" style="color:var(--teal)">${esc(n.e.label)}</button>`;
   if (n.kind==="entity") return `<button class="node n-entity ${state.sel===n.id?"sel":""}" data-id="${n.id}" data-sel="${n.id}"><span class="sw" style="width:10px;height:10px;border-radius:3px;background:var(--brand)"></span>${esc(n.e.label)}<span class="cnt">${n.e.ids.length}×</span></button>`;
@@ -657,11 +746,20 @@ function drawMap(animate){
   state.mapSize = {W,H};
   if (!state.view0) fitMap(); else applyView();
 }
+// The map fills the rest of the window (measured from the top of the page), so it and its controls fit on one screen
+function sizeMap(){
+  const vp = $("#mm"); if (!vp) return;
+  const top = vp.getBoundingClientRect().top + scrollY, avail = innerHeight - top - 24;
+  vp.style.height = innerWidth > 640 ? Math.round(Math.max(460, Math.min(940, avail))) + "px" : Math.round(Math.max(420, innerHeight * .68)) + "px";
+}
 function applyView(){ const v = state.view0, w = $("#world"); if (w && v) w.style.transform = `translate(${v.x}px,${v.y}px) scale(${v.s})`; }
 function fitMap(){
   const vp = $("#mm"); if (!vp || !state.mapSize) return;
   const {W,H} = state.mapSize, pad = vp.clientWidth < 600 ? 20 : 60, side = state.sel && vp.clientWidth > 900 ? 400 : 0, pw = vp.clientWidth - pad - side, ph = vp.clientHeight - 60;
-  const s = Math.max(.18, Math.min(1, pw/W, ph/H));
+  const fit = Math.min(1, pw/W, ph/H);
+  // phones: a whole map at 20% is unreadable, so open at a readable size centred on the project and let people pan
+  if (vp.clientWidth < 640 && fit < .5){ const s = .5; state.view0 = {s, x:(vp.clientWidth - W*s)/2, y:Math.max(16, (vp.clientHeight - H*s)/2)}; return applyView(); }
+  const s = Math.max(.18, fit);
   state.view0 = {s, x:pad/2 + Math.max(0,(pw - W*s)/2), y:30 + Math.max(0,(ph - H*s)/2)}; applyView();
 }
 function zoomAt(f, cx, cy){
@@ -670,17 +768,19 @@ function zoomAt(f, cx, cy){
 }
 function bindPan(){
   const vp = $("#mm"); if (!vp) return; let drag = null;
-  vp.addEventListener("pointerdown", e=>{ if (e.target.closest(".node,.mm-ctl,.panel")) return; drag = {x:e.clientX, y:e.clientY, vx:state.view0.x, vy:state.view0.y}; vp.classList.add("grabbing"); vp.setPointerCapture(e.pointerId); });
+  vp.addEventListener("pointerdown", e=>{ if (e.target.closest(".node,.mm-ctl,.panel,.mapnote")) return; drag = {x:e.clientX, y:e.clientY, vx:state.view0.x, vy:state.view0.y}; vp.classList.add("grabbing"); vp.setPointerCapture(e.pointerId); });
   vp.addEventListener("pointermove", e=>{ if (!drag) return; state.view0.x = drag.vx + e.clientX - drag.x; state.view0.y = drag.vy + e.clientY - drag.y; applyView(); });
   const end = () => { drag = null; vp.classList.remove("grabbing"); };
   vp.addEventListener("pointerup", end); vp.addEventListener("pointercancel", end);
   vp.addEventListener("wheel", e=>{ if (e.target.closest(".panel")) return; e.preventDefault(); const r = vp.getBoundingClientRect(); zoomAt(e.deltaY<0?1.1:1/1.1, e.clientX-r.left, e.clientY-r.top); }, {passive:false});
 }
 function vMap(){
-  return `<section class="desk"><div class="mm" id="mm"><div class="world" id="world"></div>
+  const none = GROUPS.every(g=>!state.show[g.key]);
+  const note = none ? `Every type is hidden, so only topics show. <button class="link" data-act="showall">Show all</button>`
+    : !state.an.items.length ? `No tasks, decisions or risks found in this chat yet. Topics are shown, and every message is in <button class="link" data-view="chat">Chat</button>.` : "";
+  return `<section class="desk"><div class="mm" id="mm">${note?`<div class="mapnote" role="status">${note}</div>`:""}<div class="world" id="world"></div>
     <div class="mm-ctl"><button data-zoom="in" aria-label="Zoom in">+</button><button data-zoom="out" aria-label="Zoom out">−</button><button data-zoom="fit" aria-label="Fit to screen" style="font-size:13px">Fit</button></div>
-    <div class="mm-hint">Drag to move · scroll to zoom · click a branch to fold it · click a card for details</div>
-    <div id="detail"></div></div></section>`;
+    <div class="mm-hint">Drag to move · scroll to zoom · click a branch to fold it · click a card for details</div></div></section>`;
 }
 function drawDetail(){
   const box = $("#detail"); if (!box) return;
@@ -688,21 +788,34 @@ function drawDetail(){
   if (state.sel.startsWith("e:")){
     const [, tk, label] = state.sel.split(":"); const t = state.an.threads.find(x=>x.key===tk); const e = entitiesFor(t.ids).find(x=>x.label===label);
     if (!e){ box.innerHTML = ""; return; }
-    box.innerHTML = `<aside class="panel" aria-label="${esc(e.label)}"><button class="xbtn" data-act="unsel" aria-label="Close">${ICON.x}</button>
-      <span class="tag t-brand">Material or brand</span><h3>${esc(e.label)}</h3><p class="muted" style="margin:0 0 12px;font-size:13px">Mentioned ${e.ids.length} time${e.ids.length>1?"s":""} in ${esc(t.name)}</p>
+    box.innerHTML = `<aside class="panel" aria-label="${esc(e.label)}"><button class="xbtn" data-act="unsel" aria-label="Close details">${ICON.x}</button>
+      <div class="ptags"><span class="tag t-brand">Material or brand</span></div><h3>${esc(e.label)}</h3><p class="muted" style="margin:0 0 12px;font-size:13px">Mentioned ${e.ids.length} time${e.ids.length>1?"s":""} in ${esc(t.name)}</p>
       ${e.ids.map(id=>{const m=byId(id); const it = state.an.items.find(x=>x.id===id); return `<div class="quote" style="margin-bottom:8px"><b>${esc(baseName(m.author))}</b> <span class="muted mono" style="font-size:11px">${fmtDay(m.t)} ${fmtTime(m.t)}</span>${it?` <span class="tag ${TYPE_CLASS[it.kind]}">${TYPE_LABEL[it.kind]}</span>`:""}<br>${esc(m.text)}</div>`}).join("")}</aside>`;
     return;
   }
   const id = +state.sel.split(":")[1], i = state.an.items.find(x=>x.id===id), m = byId(id), t = threadOf(id), d = !!state.done[id];
   if (!i){ box.innerHTML = ""; return; }
   const related = entitiesFor([id]).map(e=>`<span class="tag t-brand">${esc(e.label)}</span>`).join(" ");
-  box.innerHTML = `<aside class="panel" aria-label="Item details"><button class="xbtn" data-act="unsel" aria-label="Close">${ICON.x}</button>
-    <span class="tag ${TYPE_CLASS[i.kind]}">${TYPE_LABEL[i.kind]}</span> <span class="tag" style="background:color-mix(in oklab,var(--${t.color}) 22%,transparent)">${esc(t.name)}</span>
-    <h3>${esc(i.text.length>90?i.text.slice(0,88)+"…":i.text)}</h3>
+  // conversation around the item: one message before, two after, the item itself highlighted
+  const around = state.msgs.slice(Math.max(0, id-2), Math.min(state.msgs.length, id+2));
+  const ctx = around.map(c=>`<div class="cm ${c.id===id?"me":""}"><b>${esc(baseName(c.author))}</b><span class="muted mono">${fmtTime(c.t)}</span><br>${c.text?esc(c.text):`<span class="muted">${ICON.cam} photo</span>`}</div>`).join("");
+  box.innerHTML = `<aside class="panel" aria-label="Item details" style="--k:var(--${TYPE_COLOR[i.kind]})"><button class="xbtn" data-act="unsel" aria-label="Close details">${ICON.x}</button>
+    <div class="ptags"><span class="tag ${TYPE_CLASS[i.kind]}">${TYPE_LABEL[i.kind]}</span>${topicTag(t)}${d?`<span class="tag t-done">Done</span>`:""}</div>
+    <h3 title="${esc(i.text)}">${esc(i.text)}</h3>
     <dl class="kv"><dt><label for="ownerSel">Owner</label></dt><dd><select id="ownerSel" class="osel" data-item="${id}"><option value="">Needs an owner</option>${people().map(p=>`<option value="${esc(p.name)}" ${p.name===i.owner?"selected":""}>${esc(baseName(p.name))}${roleOf(p.name)?` · ${esc(roleOf(p.name))}`:""}</option>`).join("")}${i.owner && !people().byName.has(i.owner)?`<option selected>${esc(i.owner)}</option>`:""}</select>${state.owners[id]!==undefined?` <span class="muted" style="font-size:12px">set by hand</span>`:""}</dd><dt>Due</dt><dd>${i.due?esc(i.due):"No date in the chat"}</dd><dt>Said by</dt><dd>${esc(m.author)}, ${fmtDay(m.t)} ${fmtTime(m.t)}</dd>${related?`<dt>Relates to</dt><dd>${related}</dd>`:""}</dl>
-    <div class="eyebrow" style="margin-bottom:6px">From the chat</div><div class="quote">${esc(m.text)}</div>
-    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">${i.kind!=="decision"?`<button class="btn sm ${d?"":"wa"}" data-done="${id}">${d?"Mark as open":"Mark done"}</button>`:""}<button class="btn sm" data-chatfor="${id}">Show in chat</button></div></aside>`;
+    <div class="eyebrow" style="margin-bottom:6px">In the chat</div><div class="ctx">${ctx}</div>
+    <div class="pacts">${i.kind!=="decision"?`<button class="btn sm ${d?"":"wa"}" data-done="${id}">${d?"Reopen":"Mark done"}</button>`:""}<button class="btn sm" data-chatfor="${id}">Open in chat</button>${state.view!=="map"?`<button class="btn sm" data-onmap="${id}">Show on map</button>`:""}</div></aside>`;
 }
+// desktop: the drawer starts level with the view (below the tabs) and rides up to the top as the page scrolls
+function placeDrawer(){
+  const p = $("#detail .panel"); if (!p) return;
+  if (innerWidth <= 640){ p.style.top = ""; p.style.maxHeight = ""; return; }
+  const top = Math.max(16, $("#view").getBoundingClientRect().top);
+  p.style.top = top + "px"; p.style.maxHeight = `calc(100vh - ${top + 16}px)`;
+}
+addEventListener("scroll", ()=>requestAnimationFrame(placeDrawer), {passive:true});
+// open an item's details in place, from any view
+function openItem(id){ state.sel = "i:"+id; drawDetail(); placeDrawer(); $("#detail .xbtn")?.focus({preventScroll:true}); }
 
 /* ---------- flow ---------- */
 function vFlow(){
@@ -716,7 +829,7 @@ function vFlow(){
     ${skip?`<div style="margin:0 0 14px"><span class="muted" style="font-size:13px">Showing the latest ${its.length} of ${all.length} steps · </span><button class="link" data-flowmore="${t.key}">Show 40 earlier steps</button></div>`:""}
     ${ents.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px"><span class="eyebrow" style="align-self:center">Relates to</span>${ents.map(e=>`<span class="tag t-brand">${esc(e.label)} · ${e.ids.length}</span>`).join("")}</div>`:""}
     <div class="lanes" id="lanes">${lanes.map(([k,l,c])=>`<div class="lane-h" style="grid-column:${lanes.findIndex(x=>x[0]===k)+1};grid-row:1"><i style="background:var(--${c})"></i>${l}</div>`).join("")}
-      ${its.map((i,n)=>{const m=byId(i.id), d=!!state.done[i.id]; return `<button class="fcard ${d?"is-done":""} reveal" data-fl="${n}" data-flowsel="${i.id}" style="grid-column:${lanes.findIndex(x=>x[0]===i.kind)+1};grid-row:${n+2};--k:var(--${TYPE_COLOR[i.kind]});--d:${Math.min(n,20)*70}ms"><span class="step-n">${skip+n+1}</span><div class="tx">${esc(i.text)}</div><div class="meta">${avatar(m.author)}${esc(baseName(m.author))} · ${fmtShort(m.t)} ${fmtTime(m.t)}${i.due?` · <span class="due">${esc(i.due)}</span>`:""}${d?` · <span class="tag t-done">Done</span>`:""}</div></button>`}).join("") || `<p class="muted" style="grid-column:1/-1">No decisions, asks or risks in this topic yet.</p>`}
+      ${its.map((i,n)=>{const m=byId(i.id), d=!!state.done[i.id]; return `<button class="fcard ${d?"is-done":""} reveal" data-fl="${n}" data-flowsel="${i.id}" style="grid-column:${lanes.findIndex(x=>x[0]===i.kind)+1};grid-row:${n+2};--k:var(--${TYPE_COLOR[i.kind]});--d:${Math.min(n,20)*70}ms"><span class="step-n">${skip+n+1}</span><span class="lane-l tag ${TYPE_CLASS[i.kind]}">${lanes.find(x=>x[0]===i.kind)[1]}</span><div class="tx">${esc(i.text)}</div><div class="meta">${avatar(m.author)}${esc(baseName(m.author))} · ${fmtShort(m.t)} ${fmtTime(m.t)}${i.due?` · <span class="due">${esc(i.due)}</span>`:""}${d?` · <span class="tag t-done">Done</span>`:""}</div></button>`}).join("") || `<p class="muted" style="grid-column:1/-1">No decisions, asks or risks in this topic yet.</p>`}
       <svg class="flow-svg" id="flowsvg"></svg>
     </div></div></section>`;
 }
@@ -745,44 +858,54 @@ function vActions(){
 }
 function taskItems(){ return state.an.items.filter(i=>state.show[groupOf(i)] && !(state.hideDone && state.done[i.id])); }
 const topicTag = t => `<span class="tag" style="background:color-mix(in oklab,var(--${t.color}) 22%,transparent)">${esc(t.name)}</span>`;
-function taskCard(i, cls=""){
+function taskCard(i, cls="", inCol=false){
   const m = byId(i.id), t = threadOf(i.id), d = !!state.done[i.id], who = i.owner || "";
+  // inside a Kanban column the column already says the type, so only Done cards keep theirs
+  const typeTag = inCol && !d ? "" : `<span class="tag ${TYPE_CLASS[i.kind]}">${TYPE_LABEL[i.kind]}</span>`;
   return `<article class="tcard ${cls} ${d?"is-done":""}" data-tid="${i.id}" ${i.kind!=="decision"?`draggable="true"`:""} style="--k:var(--${TYPE_COLOR[i.kind]})">
     <div class="tc-top">${i.kind!=="decision"?`<button class="check" data-done="${i.id}" aria-pressed="${d}" aria-label="Mark ${d?"open":"done"}">${ICON.check}</button>`:`<span class="check" style="border-color:var(--done);background:var(--done);color:#fff" aria-hidden="true"><svg style="opacity:1;width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>`}
-      <div class="tx">${esc(i.text)}</div></div>
-    <div class="tc-tags"><span class="tag ${TYPE_CLASS[i.kind]}">${TYPE_LABEL[i.kind]}</span>${topicTag(t)}</div>
-    <div class="tc-foot">${who?`${avatar(who)}<span>${esc(baseName(who))}</span>`:`<span class="muted">${i.kind==="decision"||i.kind==="risk"?esc(baseName(m.author)):"Needs an owner"}</span>`}<span class="spacer"></span>${i.due?`<span class="due">${esc(i.due)}</span>`:`<span class="muted">${fmtShort(m.t)}</span>`}</div>
+      <button class="tx rowlink" data-open="${i.id}" title="Open details">${esc(i.text)}</button></div>
+    <div class="tc-tags">${typeTag}${topicTag(t)}</div>
+    <div class="tc-foot">${who?`${avatar(who)}<span>${esc(baseName(who))}</span>`:i.kind==="decision"||i.kind==="risk"?`<span class="muted">${esc(baseName(m.author))}</span>`:`<button class="needs" data-open="${i.id}" title="Pick who does this">+ Assign owner</button>`}<span class="spacer"></span>${i.due?`<span class="due">${esc(i.due)}</span>`:`<span class="muted">${fmtShort(m.t)}</span>`}</div>
   </article>`;
 }
 function vKanban(){
   const all = state.an.items.filter(i=>state.show[groupOf(i)] || state.done[i.id]);
+  // a type switched off under Show removes its column, rather than leaving an empty one that says "Nothing here"
   const cols = [
-    {key:"todo", label:"To do", color:"todo", hint:"Asks and commitments", its:all.filter(i=>groupOf(i)==="todo" && !state.done[i.id] && state.show.todo)},
-    {key:"risk", label:"Risks", color:"risk", hint:"Problems to resolve", its:all.filter(i=>i.kind==="risk" && !state.done[i.id] && state.show.risk)},
-    {key:"decided", label:"Decided", color:"done", hint:"Agreed in the chat", its:all.filter(i=>i.kind==="decision" && state.show.done)},
-    {key:"donecol", label:"Done", color:"teal", hint:"Drag a card here", its:all.filter(i=>state.done[i.id])}
-  ];
-  return `<section class="desk"><div class="kanban">${cols.map(c=>`<div class="kcol" data-col="${c.key}"><div class="kh"><i style="background:var(--${c.color})"></i><b>${c.label}</b><span class="cnt">${c.its.length}</span></div><p class="kh-hint">${c.hint}</p>
-    <div class="kbody">${c.its.slice(-lim("k"+c.key)).reverse().map(i=>taskCard(i,"reveal")).join("") || `<div class="kempty">${c.key==="donecol"?"Drop finished items here":"Nothing here"}</div>`}${more(Math.min(lim("k"+c.key), c.its.length), c.its.length, "k"+c.key)}</div></div>`).join("")}</div></section>`;
+    {key:"todo", on:state.show.todo, label:"To do", color:"todo", hint:"Asks and commitments", empty:"Nothing left to do", its:all.filter(i=>groupOf(i)==="todo" && !state.done[i.id])},
+    {key:"risk", on:state.show.risk, label:"Risks", color:"risk", hint:"Problems to resolve", empty:"No open risks", its:all.filter(i=>i.kind==="risk" && !state.done[i.id])},
+    {key:"decided", on:state.show.done, label:"Decided", color:"done", hint:"Agreed in the chat", empty:"No decisions yet", its:all.filter(i=>i.kind==="decision")},
+    {key:"donecol", on:true, label:"Done", color:"teal", hint:"Finished items", empty:"Tick a card's box, or drag it here", its:all.filter(i=>state.done[i.id] && state.show[groupOf(i)])}
+  ].filter(c=>c.on);
+  return `<section class="desk"><div class="kanban" style="--kc:${cols.length}">${cols.map(c=>`<div class="kcol" data-col="${c.key}"><div class="kh"><i style="background:var(--${c.color})"></i><b>${c.label}</b><span class="cnt">${c.its.length}</span></div><p class="kh-hint">${c.hint}</p>
+    <div class="kbody">${c.its.slice(-lim("k"+c.key)).reverse().map(i=>taskCard(i,"reveal",true)).join("") || `<div class="kempty">${c.empty}</div>`}${more(Math.min(lim("k"+c.key), c.its.length), c.its.length, "k"+c.key)}</div></div>`).join("")}</div></section>`;
 }
 const lim = key => (state.limits ||= {})[key] || PAGE;
+// empty results always say why and offer the way back
+function emptyFilters(){
+  const hidden = GROUPS.filter(g=>g.key!=="brand" && !state.show[g.key]).map(g=>g.label.toLowerCase());
+  const why = hidden.length ? `${hidden.length>1 ? hidden.slice(0,-1).join(", ") + " and " + hidden[hidden.length-1] : hidden[0]} ${hidden.length>1?"are":"is"} hidden` : state.hideDone ? "done items are hidden" : "";
+  return why ? `<div class="kempty">Nothing to show: ${why}. <button class="link" data-act="showall">Show everything</button></div>`
+    : `<div class="kempty">Nothing here yet. Asks, commitments, decisions and risks from the chat appear here.</div>`;
+}
 function vGrid(){
   const its = taskItems().sort((a,b)=>(+!!state.done[a.id])-(+!!state.done[b.id]) || b.id-a.id);
-  return `<section class="desk"><div class="tgrid">${its.slice(0, lim("grid")).map(i=>taskCard(i,"reveal")).join("") || `<p class="muted">Nothing matches these filters.</p>`}</div>${more(Math.min(lim("grid"), its.length), its.length, "grid")}<div style="height:18px"></div></section>`;
+  return `<section class="desk"><div class="tgrid">${its.slice(0, lim("grid")).map(i=>taskCard(i,"reveal")).join("") || `<div style="grid-column:1/-1">${emptyFilters()}</div>`}</div>${more(Math.min(lim("grid"), its.length), its.length, "grid")}<div style="height:18px"></div></section>`;
 }
 function vList(){
   const its = taskItems(), dir = state.sortDir;
   const key = {date:i=>i.id, item:i=>i.text.toLowerCase(), type:i=>TYPE_LABEL[i.kind], topic:i=>threadOf(i.id).name, owner:i=>baseName(i.owner||"~"), due:i=>i.due||"~"}[state.sort];
   its.sort((a,b)=>{ const x = key(a), y = key(b); return (x>y?1:x<y?-1:0)*dir; });
-  const th = (k,l) => `<th><button class="sortb" data-sort="${k}" aria-sort="${state.sort===k?(dir>0?"ascending":"descending"):"none"}">${l}${state.sort===k?(dir>0?" ↑":" ↓"):""}</button></th>`;
-  return `<section class="desk"><div class="pad"><div class="tablewrap"><table class="tlist"><thead><tr><th style="width:40px"></th>${th("item","Item")}${th("type","Type")}${th("topic","Topic")}${th("owner","Owner")}${th("due","Due")}${th("date","Raised")}</tr></thead><tbody>
-    ${its.slice(0, lim("list")).map(i=>{const m = byId(i.id), d = !!state.done[i.id]; return `<tr class="${d?"is-done":""}"><td>${i.kind!=="decision"?`<button class="check" data-done="${i.id}" aria-pressed="${d}" aria-label="Mark ${d?"open":"done"}">${ICON.check}</button>`:""}</td>
-      <td class="tx"><button class="rowlink" data-flowsel="${i.id}" title="Open on the mind map">${esc(i.text)}</button></td><td><span class="tag ${TYPE_CLASS[i.kind]}">${TYPE_LABEL[i.kind]}</span></td><td>${topicTag(threadOf(i.id))}</td>
-      <td>${i.owner?`<span class="who">${avatar(i.owner)}${esc(baseName(i.owner))}</span>`:`<span class="muted">${i.kind==="request"?"Needs an owner":"—"}</span>`}</td><td>${i.due?`<span class="due">${esc(i.due)}</span>`:`<span class="muted">—</span>`}</td><td class="mono" style="font-size:12px">${fmtShort(m.t)} ${fmtTime(m.t)}</td></tr>`}).join("") || `<tr><td colspan="7" class="muted">Nothing matches these filters.</td></tr>`}
+  const th = (k,l,c="") => `<th class="${c}"><button class="sortb" data-sort="${k}" aria-sort="${state.sort===k?(dir>0?"ascending":"descending"):"none"}">${l}${state.sort===k?(dir>0?" ↑":" ↓"):""}</button></th>`;
+  return `<section class="desk"><div class="pad"><div class="tablewrap"><table class="tlist"><thead><tr><th style="width:40px"><span class="sr">Done</span></th>${th("item","Item")}${th("type","Type","c-type")}${th("topic","Topic","c-topic")}${th("owner","Owner")}${th("due","Due")}${th("date","Raised","c-raised")}</tr></thead><tbody>
+    ${its.slice(0, lim("list")).map(i=>{const m = byId(i.id), d = !!state.done[i.id]; return `<tr class="${d?"is-done":""}"><td>${i.kind!=="decision"?`<button class="check" data-done="${i.id}" aria-pressed="${d}" aria-label="Mark ${d?"open":"done"}">${ICON.check}</button>`:`<span class="sr">Decided</span>`}</td>
+      <td class="tx"><button class="rowlink" data-open="${i.id}" title="Open details">${esc(i.text)}</button></td><td class="c-type"><span class="tag ${TYPE_CLASS[i.kind]}">${TYPE_LABEL[i.kind]}</span></td><td class="c-topic">${topicTag(threadOf(i.id))}</td>
+      <td>${i.owner?`<span class="who">${avatar(i.owner)}${esc(baseName(i.owner))}</span>`:i.kind==="request"||i.kind==="task"?`<button class="needs" data-open="${i.id}">+ Assign</button>`:`<span class="muted">—</span>`}</td><td>${i.due?`<span class="due">${esc(i.due)}</span>`:`<span class="muted">—</span>`}</td><td class="mono c-raised" style="font-size:12px;white-space:nowrap">${fmtShort(m.t)} ${fmtTime(m.t)}</td></tr>`}).join("") || `<tr><td colspan="7">${emptyFilters()}</td></tr>`}
   </tbody></table></div>${more(Math.min(lim("list"), its.length), its.length, "list")}</div></section>`;
 }
 function vPeople(){
-  const open = state.an.items.filter(i=>i.kind!=="decision" && !(state.hideDone && state.done[i.id]));
+  const open = state.an.items.filter(i=>i.kind!=="decision" && state.show[groupOf(i)] && !(state.hideDone && state.done[i.id]));
   const by = {}; open.forEach(i=>{ const k = i.owner || "__none"; (by[k] ||= []).push(i); });
   const order = Object.keys(by).sort((a,b)=> a==="__none"?-1 : b==="__none"?1 : by[b].filter(isOpen).length - by[a].filter(isOpen).length);
   const ncol = Math.max(1, Math.min(4, Math.floor((Math.min(innerWidth, 1440) - 80) / 300)));
@@ -791,12 +914,12 @@ function vPeople(){
     const list = by[k].sort((a,b)=>(+!!state.done[a.id])-(+!!state.done[b.id]) || a.id-b.id), left = list.filter(isOpen).length;
     return `<div class="owner reveal ${k==="__none"?"unassigned":""}"><h3>${k==="__none"?`<span class="av" style="--pc:var(--todo)">?</span>Needs an owner`:`${avatar(k)}${esc(baseName(k))}${roleOf(k)?`<span class="role">${esc(roleOf(k))}</span>`:""}`}<span class="cnt">${left} open</span></h3>
       ${list.slice(0, lim("p"+k)).map(i=>{const m=byId(i.id), t=threadOf(i.id), d=!!state.done[i.id]; return `<div class="act ${d?"is-done":""}"><button class="check" data-done="${i.id}" aria-pressed="${d}" aria-label="Mark ${d?"open":"done"}">${ICON.check}</button>
-        <div style="min-width:0"><div class="tx">${esc(i.text)}</div><div class="meta"><span class="tag ${TYPE_CLASS[i.kind]}">${TYPE_LABEL[i.kind]}</span><span class="tag" style="background:color-mix(in oklab,var(--${t.color}) 22%,transparent)">${esc(t.name)}</span></div>
+        <div style="min-width:0"><button class="tx rowlink" data-open="${i.id}" title="Open details">${esc(i.text)}</button><div class="meta"><span class="tag ${TYPE_CLASS[i.kind]}">${TYPE_LABEL[i.kind]}</span><span class="tag" style="background:color-mix(in oklab,var(--${t.color}) 22%,transparent)">${esc(t.name)}</span></div>
         <div class="when">${k==="__none"||i.kind==="risk"?`${esc(baseName(m.author))} raised it · `:""}${fmtShort(m.t)}${i.due?` · due <span class="due">${esc(i.due)}</span>`:""}</div></div></div>`}).join("")}
       ${more(Math.min(lim("p"+k), list.length), list.length, "p"+k)}
     </div>`;});
   cards.forEach((html,n)=>{ const c = cols.reduce((a,b)=>b.h<a.h?b:a); c.html.push(html); c.h += 1.2 + by[order[n]].length; });
-  if (!order.length) return `<section class="desk"><div class="pad"><p class="muted">Nothing to do. Every ask in this chat is handled.</p></div></section>`;
+  if (!order.length) return `<section class="desk"><div class="pad">${GROUPS.some(g=>g.key!=="brand" && g.key!=="done" && !state.show[g.key]) || state.hideDone ? emptyFilters() : `<div class="kempty">Nothing to do. Every ask in this chat is handled.</div>`}</div></section>`;
   return `<section class="desk"><div class="owners" style="--cols:${ncol}">${cols.map(c=>`<div class="ocol">${c.html.join("")}</div>`).join("")}</div></section>`;
 }
 
@@ -806,13 +929,15 @@ function vChat(){
   let last = ""; const rows = [];
   const hits = state.msgs.filter(m=>!q || m.text.toLowerCase().includes(q) || m.author.toLowerCase().includes(q)), cap = lim("chat") * 2;
   if (hits.length > cap) rows.push(`<button class="btn sm" style="margin:6px auto 12px;display:flex" data-more="chat">Show ${Math.min(PAGE*2, hits.length-cap)} earlier messages</button>`);
+  // add the year to day headers when the chat isn't all from this year, so "Tue, Oct 27" is never ambiguous
+  const yr = state.msgs[0].t.getFullYear()!==new Date().getFullYear() || state.msgs[state.msgs.length-1].t.getFullYear()!==new Date().getFullYear();
   hits.slice(-cap).forEach(m=>{
-    const d = fmtDay(m.t); if (d!==last){ rows.push(`<div class="daysep">${d}</div>`); last = d; }
+    const d = fmtDay(m.t) + (yr ? ", " + m.t.getFullYear() : ""); if (d!==last){ rows.push(`<div class="daysep">${d}</div>`); last = d; }
     const t = threadOf(m.id);
-    rows.push(`<div class="msg" id="m${m.id}" style="--c:var(--${t?.color||"plum"})"><div><div class="who">${esc(m.author)}</div><div class="when mono">${fmtTime(m.t)}</div></div><div style="min-width:0"><div class="what">${esc(m.text)}${m.media?` <span class="muted">${ICON.cam} photo</span>`:""}</div><div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">${t?`<span class="tag" style="background:color-mix(in oklab,var(--${t.color}) 22%,transparent)">${esc(t.name)}</span>`:""}${kind[m.id]?`<span class="tag ${TYPE_CLASS[kind[m.id]]}">${TYPE_LABEL[kind[m.id]]}</span>`:""}</div></div></div>`);
+    rows.push(`<div class="msg" id="m${m.id}" style="--c:var(--${t?.color||"plum"})"><div><div class="who">${esc(m.author)}</div><div class="when mono">${fmtTime(m.t)}</div></div><div style="min-width:0"><div class="what">${esc(m.text)}${m.media?` <span class="muted">${ICON.cam} photo</span>`:""}</div><div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">${t?`<span class="tag" style="background:color-mix(in oklab,var(--${t.color}) 22%,transparent)">${esc(t.name)}</span>`:""}${kind[m.id]?`<button class="tag ${TYPE_CLASS[kind[m.id]]}" style="border:0;cursor:pointer" data-open="${m.id}" title="Open this item">${TYPE_LABEL[kind[m.id]]}${state.done[m.id]?" · done":""} ›</button>`:""}</div></div></div>`);
   });
   const n = hits.length;
-  return `<section class="desk"><div class="pad"><div class="muted" style="font-size:13px;margin-bottom:6px">${state.q?`${n} message${n===1?"":"s"} match “${esc(state.q)}” · <button class="link" data-act="clearq">Clear search</button>`:`${state.msgs.length} messages, newest last`}</div>${rows.join("") || `<p class="muted">No messages match. Try a shorter word.</p>`}</div></section>`;
+  return `<section class="desk"><div class="pad"><div class="chatcol"><div class="muted" style="font-size:13px;margin-bottom:6px">${state.q?`${n} message${n===1?"":"s"} match “${esc(state.q)}” · <button class="link" data-act="clearq">Clear search</button>`:`${state.msgs.length.toLocaleString()} message${state.msgs.length===1?"":"s"}, newest last${state.msgs.length > hits.slice(-cap).length ? ` · showing the latest ${hits.slice(-cap).length.toLocaleString()}` : ""}`}</div>${rows.join("") || `<div class="kempty" style="margin-top:8px">No messages match “${esc(state.q)}”. <button class="link" data-act="clearq">Clear search</button></div>`}</div></div></section>`;
 }
 function outText(k){
   const an = state.an, open = an.items.filter(isOpen);
@@ -828,7 +953,13 @@ function outText(k){
 }
 function vSend(){
   return `<section class="desk"><div class="ogrid">${[["status","Team status","Everything open, grouped by topic."],["plan","Next steps","A checklist per person."],["client","Client update","Decisions and progress. Leaves out internal risks."]]
-    .map(([k,t,d])=>`<div class="ocard reveal"><div><h3 style="font-size:18px">${t}</h3><p class="muted" style="margin:2px 0 0;font-size:13px">${d}</p></div><pre id="out-${k}">${esc(outText(k))}</pre><button class="btn wa" data-copy="${k}">Copy for WhatsApp</button></div>`).join("")}</div></section>`;
+    .map(([k,t,d])=>`<div class="ocard reveal"><div><h3 style="font-size:18px">${t}</h3><p class="muted" style="margin:2px 0 0;font-size:13px">${d}</p></div><pre id="out-${k}" tabindex="0" aria-label="${t} draft">${esc(outText(k))}</pre><div class="oacts"><button class="btn wa" data-copy="${k}">Copy for WhatsApp</button>${waLink(outText(k))}</div></div>`).join("")}</div></section>`;
+}
+// wa.me links break past a few thousand characters; long drafts get Copy only, with the reason on the button
+function waLink(text){
+  const url = "https://wa.me/?text=" + encodeURIComponent(text);
+  return url.length <= 6000 ? `<a class="btn" href="${url}" target="_blank" rel="noopener" title="Opens WhatsApp with this draft. You pick the chat.">${ICON.wa}Open in WhatsApp</a>`
+    : `<button class="btn" disabled style="opacity:.55;cursor:not-allowed" title="This draft is too long to open directly. Copy it instead.">${ICON.wa}Too long to open</button>`;
 }
 
 /* ---------- render ---------- */
@@ -837,24 +968,48 @@ function render(animate=false){
   const v = {map:vMap, flow:vFlow, actions:vActions, chat:vChat, send:vSend}[state.view] || vMap;
   $("#view").innerHTML = v();
   if (!animate || STILL) document.querySelectorAll("#view .reveal").forEach(e=>e.classList.remove("reveal"));
-  if (state.view==="map"){ drawMap(animate); bindPan(); drawDetail(); }
+  if (state.view==="map"){ sizeMap(); drawMap(animate); bindPan(); }
   if (state.view==="flow") drawFlowArrows();
+  drawDetail(); placeDrawer();
+  if (state.view==="chat" && state.focusMsg){ const el = $("#m"+state.focusMsg); state.focusMsg = null;
+    if (el){ el.classList.add("flash"); el.scrollIntoView({block:"center", behavior:STILL?"auto":"smooth"}); } }
   document.querySelectorAll('[data-act="claude"]').forEach(b=>b.hidden=!sampleFn);
 }
-function go(view){ state.view = view; try{ history.replaceState(null,"","#"+view); }catch(e){} render(true); }
+function go(view, keepSel=false){ if (!keepSel && view!==state.view) state.sel = null; state.view = view; try{ history.replaceState(null,"","#"+view); }catch(e){} render(true); }
 
 /* ---------- import ---------- */
 const imp = {step:1, src:"file", text:"", name:"", msgs:null, err:""};
-function modal(html){ $("#layer").innerHTML = `<div class="overlay" data-close><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`; $("#layer").querySelector(".modal button, .modal input, .modal textarea")?.focus(); }
-function closeLayer(){ if (aiCtl){ aiCtl.abort(); aiCtl = null; } $("#layer").innerHTML = ""; }
-function openImport(){ Object.assign(imp,{step:1,src:"file",text:"",name:"",msgs:null,err:""}); drawImport(); }
+// Dialogs: focus moves in (to the first field, or the dialog itself), Tab stays inside, focus returns to the opener on close
+let lastFocus = null;
+function modal(html){
+  if (!$("#layer").innerHTML) lastFocus = document.activeElement;
+  const keep = document.activeElement?.id;
+  $("#layer").innerHTML = `<div class="overlay" data-close><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle" tabindex="-1">${html}</div></div>`;
+  const m = $("#layer .modal"), h = m.querySelector("h2"); if (h) h.id = "mtitle";
+  const again = keep && m.querySelector("#"+keep);
+  (again || m.querySelector("input:not([type=file]):not([hidden]), textarea") || m).focus();
+}
+function closeLayer(){
+  if (aiCtl){ aiCtl.abort(); aiCtl = null; }
+  if (!$("#layer").innerHTML) return;
+  $("#layer").innerHTML = "";
+  if (lastFocus && document.contains(lastFocus)) lastFocus.focus({preventScroll:true}); lastFocus = null;
+}
+document.addEventListener("keydown", e=>{
+  if (e.key!=="Tab") return; const m = $("#layer .modal"); if (!m) return;
+  const f = [...m.querySelectorAll('button,input:not([type=file]),textarea,select,label[for],[href]')].filter(x=>!x.hidden && x.offsetParent);
+  if (!f.length) return; const a = f[0], z = f[f.length-1];
+  if (e.shiftKey && (document.activeElement===a || document.activeElement===m)){ e.preventDefault(); z.focus(); }
+  else if (!e.shiftKey && document.activeElement===z){ e.preventDefault(); a.focus(); }
+});
+function openImport(){ Object.assign(imp,{step:1,src:"file",text:"",name:"",msgs:null,err:"",reading:""}); drawImport(); }
 function drawImport(){
   let body;
   if (imp.step===1) body = `<div class="ways">
       <button class="way" data-src="file" aria-pressed="${imp.src==="file"}"><b>Chat export</b><span>A .zip or .txt from WhatsApp. Best option.</span></button>
       <button class="way" data-src="paste" aria-pressed="${imp.src==="paste"}"><b>Paste messages</b><span>For a short stretch of chat.</span></button>
       <button class="way" data-src="live" aria-pressed="${imp.src==="live"}"><b>Live sync</b><span>Needs WhatsApp Business setup.</span></button></div>`
-    + (imp.src==="file" ? `<label class="drop" id="drop" for="file">Drop the chat export here, or click to choose a file</label><input id="file" type="file" accept=".txt,.zip,text/plain,application/zip" hidden>
+    + (imp.src==="file" ? `<label class="drop" id="drop" for="file" tabindex="0" role="button">${imp.reading?`<span class="spin" style="width:22px;height:22px;border-width:3px;display:inline-block;vertical-align:middle;margin-right:8px"></span>Reading ${esc(imp.reading)}…`:"Drop the chat export here, or click to choose a file"}<small style="display:block;font-weight:500;color:var(--muted);margin-top:4px">.zip or .txt, exported without media</small></label><input id="file" type="file" accept=".txt,.zip,text/plain,application/zip" hidden>
       <div class="howto"><div><b>iPhone</b><ol><li>Open the chat, tap its name</li><li>Tap <b>Export chat</b></li><li>Choose <b>Without media</b></li></ol></div><div><b>Android</b><ol><li>Open the chat, tap <b>⋮</b> → <b>More</b></li><li>Tap <b>Export chat</b></li><li>Choose <b>Without media</b></li></ol></div></div>`
     : imp.src==="paste" ? `<textarea id="paste" aria-label="Chat text" placeholder="[27/10/2026, 9:12 AM] Daniel: Morning team…">${esc(imp.text)}</textarea>`
     : `<p class="muted">Live sync works through the WhatsApp Business Platform: a business number, a Meta app and a small server that forwards new messages here. Personal WhatsApp accounts can't connect live. Until it's set up, re-export the chat whenever you want fresh results.</p>`)
@@ -866,34 +1021,56 @@ function drawImport(){
     ${imp.step===1&&imp.src==="paste"?`<button class="btn wa" data-imp="paste">Check messages</button>`:""}${imp.step===2?(cloud.user?`<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-imp="open">Just on this device</button><button class="btn wa" data-imp="team">Save for the team</button></span>`:`<button class="btn wa" data-imp="open">Build the map</button>`):""}</div>
     <p class="privacy">${imp.step===2&&cloud.user?"Save for the team stores the messages in your team's database, visible only to people you invite. Just on this device keeps them in this browser.":"Your chat is read in this browser and kept only on this device."}${sampleFn?" It goes to Claude only when you press Sort with Claude.":""}${cloud.on&&!cloud.user?" Sign in to share projects with your team.":""}</p>`);
   const drop = $("#drop"), file = $("#file");
-  if (drop){ file.onchange = () => file.files[0] && readFile(file.files[0]);
+  // value is cleared after each pick, so choosing the same file again (after an error) still fires
+  if (drop){ file.onchange = () => { const f = file.files[0]; file.value = ""; if (f) readFile(f); };
     ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));
     ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));
     drop.addEventListener("drop",e=>e.dataTransfer.files[0] && readFile(e.dataTransfer.files[0])); }
   $("#paste")?.addEventListener("input",e=>imp.text = e.target.value);
 }
 async function readFile(f){
+  if (!/\.(txt|zip)$/i.test(f.name) && !/^text\//.test(f.type)){ imp.err = `“${f.name}” isn't a chat export. Use the .zip or .txt file WhatsApp makes when you tap Export chat.`; imp.src = "file"; return drawImport(); }
+  if (f.size > 60e6){ imp.err = "That file is very large. Export the chat again and choose Without media."; return drawImport(); }
+  imp.err = ""; imp.reading = f.name; drawImport();
   try{
-    let text, name = f.name.replace(/\.(txt|zip)$/i,"").replace(/^WhatsApp Chat (with|-)\s*/i,"").trim() || "WhatsApp chat";
+    let text, name = f.name.replace(/\.(txt|zip)$/i,"").replace(/^WhatsApp Chat (with|-)\s*/i,"").replace(/[_]+/g," ").trim() || "WhatsApp chat";
+    if (/^_?chat$/i.test(name)) name = "WhatsApp chat";
     if (/\.zip$/i.test(f.name)){
       if (!window.JSZip){ imp.err = "Zip files can't be opened here. Unzip it and drop the .txt inside."; return drawImport(); }
       const zip = await JSZip.loadAsync(f); const entry = Object.values(zip.files).find(z=>/_chat\.txt$/i.test(z.name)) || Object.values(zip.files).find(z=>/\.txt$/i.test(z.name));
       if (!entry){ imp.err = "That zip has no chat .txt inside. Export the chat again and choose Without media."; return drawImport(); }
       text = await entry.async("string");
     } else text = await f.text();
+    imp.reading = "";
     checkText(text, name);
-  }catch(e){ imp.err = "That file couldn't be read. Try the .txt export instead."; drawImport(); }
+  }catch(e){ imp.reading = ""; imp.err = "That file couldn't be read. Try the .txt export instead."; drawImport(); }
 }
+// a chat file dropped anywhere on the page goes to the importer, instead of the browser opening it and leaving the app
+addEventListener("dragover", e=>{ if (e.dataTransfer?.types?.includes("Files")) e.preventDefault(); });
+addEventListener("drop", e=>{
+  if (!e.dataTransfer?.files?.length || e.target.closest?.("#drop")) return;
+  e.preventDefault(); if (cloud.busy) return;
+  if (!$("#layer .modal") || !imp || imp.step!==1) openImport();
+  imp.src = "file"; readFile(e.dataTransfer.files[0]);
+});
 function checkText(text, name){
   const msgs = parseChat(text);
-  if (!msgs.length){ imp.err = "No WhatsApp messages found. Lines should start with a date and time, like [27/10/2026, 9:12 AM] Name: message."; return drawImport(); }
+  if (!msgs.length){ imp.err = /\d{1,4}[\/.\-]\d{1,2}[\/.\-]\d{1,4}/.test(text)
+      ? "Found dates but no messages. The chat may only contain system notices, deleted messages or media."
+      : "No WhatsApp messages found. Lines should start with a date and time, like [27/10/2026, 9:12 AM] Name: message."; return drawImport(); }
   Object.assign(imp,{step:2, text, name, msgs, err:""}); drawImport(); $("#pname")?.select();
 }
 function finishImport(){
   const name = ($("#pname")?.value||"").trim(); if (!name){ imp.err = "Give the project a name."; return drawImport(); }
   if (state.cloud) leaveProject();
-  load(imp.text, name, false); store.set("chat",{text:imp.text,name}); store.del("analysis");
-  closeLayer(); state.view0 = null; go("map"); toast(`${state.msgs.length} messages mapped into ${state.an.threads.length} topics`);
+  load(imp.text, name, false); store.del("analysis");
+  // browsers cap storage (about 5 MB); a bigger chat still works now but can't be kept after the tab closes
+  const kept = store.set("chat",{text:imp.text,name});
+  if (!kept) store.del("chat");
+  closeLayer(); state.view0 = null; go("map");
+  const nm = `${state.msgs.length.toLocaleString()} message${state.msgs.length===1?"":"s"}`;
+  toast(kept ? `${nm} mapped into ${state.an.threads.length} topic${state.an.threads.length===1?"":"s"}`
+    : `Mapped ${nm}. This chat is too big to keep in the browser, so it will be gone when you close the tab${cloud.user?". Save it for the team to keep it.":"."}`, null, 7000);
 }
 
 /* ---------- Claude ---------- */
@@ -929,9 +1106,18 @@ ${body}`;
 }
 
 /* ---------- events ---------- */
-let tT; function toast(t){ const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(tT); tT = setTimeout(()=>el.hidden = true, 2600); }
+// toasts can carry an Undo; long messages stay up longer
+let tT, undoFn = null;
+function toast(t, undo=null, ms=null){
+  const el = $("#toast"); undoFn = undo;
+  el.innerHTML = esc(t) + (undo ? ` <button class="tundo" data-act="undo">Undo</button>` : "");
+  el.hidden = false; clearTimeout(tT); tT = setTimeout(()=>{ el.hidden = true; undoFn = null; }, ms || (undo ? 5000 : Math.max(2600, t.length * 45)));
+}
+// a click on the backdrop closes a dialog only if it also started there (selecting text and releasing outside shouldn't)
+let downOn = null; document.addEventListener("pointerdown", e=>{ downOn = e.target; }, true);
 document.addEventListener("click", e=>{
-  if (e.target.matches("[data-close]") || e.target.closest("button[data-close]")) return closeLayer();
+  if (e.target.closest("button[data-close]") || (e.target.matches(".overlay[data-close]") && downOn===e.target)){ if (!cloud.busy) closeLayer(); return; }
+  if (e.target.matches(".overlay")) return;
   const b = e.target.closest("button"); if (!b) return; const d = b.dataset;
   if (d.view) return go(d.view);
   if (d.act==="import") return openImport();
@@ -939,7 +1125,7 @@ document.addEventListener("click", e=>{
   if (d.act==="sample"){ if (state.cloud) leaveProject(); store.del("chat"); store.del("analysis"); load(SAMPLE,SAMPLE_NAME,true); closeLayer(); state.view0 = null; return go("map"); }
   if (d.act==="unsel"){ state.sel = null; return render(); }
   if (d.act==="expand"){ state.collapsed = {}; state.foldInit = true; state.view0 = null; return render(true); }
-  if (d.act==="showall"){ GROUPS.forEach(g=>state.show[g.key] = true); state.view0 = null; return render(); }
+  if (d.act==="showall"){ GROUPS.forEach(g=>state.show[g.key] = true); if (state.view==="actions") state.hideDone = false; state.view0 = null; return render(); }
   if (d.more){ (state.limits ||= {})[d.more] = lim(d.more) + PAGE; const y = scrollY; render(); return scrollTo(0, y); }
   if (d.flowmore){ const k = "flow:"+d.flowmore; (state.limits ||= {})[k] = (state.limits[k] || 40) + 40; return render(); }
   if (d.gomore){ state.layout = "list"; return go("actions"); }
@@ -958,11 +1144,20 @@ document.addEventListener("click", e=>{
     GROUPS.forEach(g=>state.show[g.key] = already ? true : g.key===d.only); if (!already) state.collapsed = Object.fromEntries(Object.entries(state.collapsed).filter(([k])=>!k.startsWith("g:"))), state.foldInit = true;
     state.view0 = null; if (state.view!=="map") return go("map"); return render(true); }
   if (d.toggle){ state.collapsed[d.toggle] ? delete state.collapsed[d.toggle] : state.collapsed[d.toggle] = 1; state.view0 = null; return render(); }
-  if (d.sel){ state.sel = state.sel===d.sel ? null : d.sel; document.querySelectorAll(".n-item.sel,.n-entity.sel").forEach(x=>x.classList.remove("sel")); if (state.sel) b.classList.add("sel"); return drawDetail(); }
-  if (d.done){ const id = +d.done; setDone(id, !state.done[id]); const y = scrollY; render(); scrollTo(0,y); return toast(state.done[id] ? "Marked done" : "Marked open"); }
+  if (d.sel){ state.sel = state.sel===d.sel ? null : d.sel; document.querySelectorAll(".n-item.sel,.n-entity.sel").forEach(x=>x.classList.remove("sel")); if (state.sel) b.classList.add("sel"); drawDetail(); return placeDrawer(); }
+  if (d.done){ const id = +d.done, was = !!state.done[id]; setDone(id, !was); const y = scrollY; render(); scrollTo(0,y);
+    // with "Hide done" on, a ticked item vanishes, so always offer a way back
+    return toast(was ? "Reopened" : state.hideDone && state.view==="actions" ? "Marked done and hidden" : "Marked done", ()=>{ setDone(id, was); const y2 = scrollY; render(); scrollTo(0,y2); }); }
+  if (d.act==="undo"){ const f = undoFn; undoFn = null; $("#toast").hidden = true; if (f) f(); return; }
   if (d.flow){ state.flowThread = d.flow; return render(true); }
-  if (d.flowsel){ state.sel = "i:"+d.flowsel; return go("map"); }
-  if (d.chatfor){ const m = byId(+d.chatfor); state.q = m.text.slice(0,24); return go("chat"); }
+  if (d.flowsel || d.open) return openItem(+(d.flowsel || d.open));
+  if (d.onmap){ const id = +d.onmap, it = state.an.items.find(x=>x.id===id), t = threadOf(id);
+    // make sure the card is actually on the map: its type shown and its topic + group unfolded
+    state.show[groupOf(it)] = true; state.foldInit = true; delete state.collapsed["t:"+t.key]; delete state.collapsed[`g:${t.key}:${groupOf(it)}`];
+    state.sel = "i:"+id; state.view0 = null; return go("map", true); }
+  if (d.chatfor){ const id = +d.chatfor; state.q = ""; state.focusMsg = id; state.sel = null;
+    // the chat shows the latest messages first; widen the window far enough back to include this one
+    const back = state.msgs.length - id + 1; (state.limits ||= {}).chat = Math.max(lim("chat"), Math.ceil(back / 2 / PAGE) * PAGE); return go("chat"); }
   if (d.copy){ const text = outText(d.copy), el = $("#out-"+d.copy);
     return navigator.clipboard.writeText(text).then(()=>toast("Copied. Paste it into WhatsApp")).catch(()=>{ const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Text selected. Press Ctrl+C to copy"); }); }
 });
@@ -974,19 +1169,37 @@ document.addEventListener("dragover", e=>{ const col = e.target.closest?.(".kcol
 document.addEventListener("drop", e=>{
   const col = e.target.closest?.(".kcol"); if (!col || !dragId) return; e.preventDefault();
   const id = dragId; dragId = null; const it = state.an.items.find(x=>x.id===+id); if (!it) return;
-  const to = col.dataset.col;
+  const to = col.dataset.col, was = !!state.done[id], home = it.kind==="risk" ? "risk" : "todo";
+  // dropped back where it already was: nothing to do, say nothing
+  if ((to==="donecol" && was) || (to===home && !was)) return;
   if (to==="decided") return toast("Decisions come from the chat. Drag to Done to finish an item.");
   if (to==="donecol") setDone(+id, true);
-  else if ((to==="todo" && groupOf(it)==="todo") || (to==="risk" && it.kind==="risk")) setDone(+id, false);
-  else return toast(`That item belongs in ${it.kind==="risk"?"Risks":"To do"}.`);
-  render(); toast(state.done[id] ? "Moved to Done" : "Reopened");
+  else if (to===home) setDone(+id, false);
+  else return toast(`That item belongs in ${home==="risk"?"Risks":"To do"}.`);
+  render(); toast(state.done[id] ? "Moved to Done" : "Reopened", ()=>{ setDone(+id, was); render(); });
 });
 document.addEventListener("input", e=>{ if (e.target.id!=="search") return; state.q = e.target.value; const p = e.target.selectionStart; render(); const s = $("#search"); s.focus(); s.setSelectionRange(p,p); });
-document.addEventListener("keydown", e=>{ if (e.key==="Escape"){ if ($("#layer").innerHTML) closeLayer(); else if (state.sel){ state.sel = null; drawDetail(); } } if (e.key==="Enter" && e.target.id==="pname") finishImport(); });
-let rT; addEventListener("resize", ()=>{ clearTimeout(rT); rT = setTimeout(()=>{ if (state.view==="map"){ state.view0 = null; drawMap(false); } if (state.view==="flow") drawFlowArrows(); if (state.view==="actions") render(); }, 150); });
+document.addEventListener("keydown", e=>{
+  if (e.key==="Escape"){
+    if ($("#layer").innerHTML){ if (!cloud.busy) closeLayer(); }
+    else if (state.sel){ const from = state.sel; state.sel = null; drawDetail(); document.querySelectorAll(".n-item.sel,.n-entity.sel").forEach(x=>x.classList.remove("sel"));
+      document.querySelector(`[data-sel="${from}"],[data-open="${from.split(":")[1]}"]`)?.focus({preventScroll:true}); }
+  }
+  if (e.key==="Enter" && e.target.id==="pname"){ e.preventDefault(); cloud.user ? null : finishImport(); }
+  if (e.key==="Enter" && (e.ctrlKey || e.metaKey) && e.target.id==="paste") document.querySelector('[data-imp="paste"]')?.click();
+  if (e.key==="Enter" && e.target.id==="email") sendLink();
+  if (e.key==="Enter" && e.target.id==="invite") invite();
+  if ((e.key==="Enter" || e.key===" ") && e.target.id==="drop"){ e.preventDefault(); $("#file")?.click(); }
+});
+let rT, lastW = innerWidth; addEventListener("resize", ()=>{ clearTimeout(rT); rT = setTimeout(()=>{
+  // phones fire resize when the address bar hides; only re-lay out when the width really changed
+  const wChanged = innerWidth !== lastW; lastW = innerWidth;
+  if (state.view==="map"){ if (!wChanged && innerWidth <= 640) return; sizeMap(); state.view0 = null; drawMap(false); } if (state.view==="flow") drawFlowArrows(); if (state.view==="actions") render(); }, 150); });
 
 document.addEventListener("change", e=>{
-  if (e.target.id==="ownerSel"){ const id = +e.target.dataset.item; setOwner(id, e.target.value || ""); render(); toast(e.target.value ? `Assigned to ${baseName(e.target.value)}` : "Marked as needing an owner"); }
+  if (e.target.id==="ownerSel"){ const id = +e.target.dataset.item, prev = state.owners[id];
+    setOwner(id, e.target.value || ""); render();
+    toast(e.target.value ? `Assigned to ${baseName(e.target.value)}` : "Marked as needing an owner", ()=>{ setOwner(id, prev===undefined ? null : prev); render(); }); }
 });
 
 /* ---------- team mode (Supabase): sign-in, shared projects, live ticks ---------- */
@@ -1061,6 +1274,9 @@ function leaveProject(){
   state.view0 = null;
 }
 async function saveToTeam(msgs, name){
+  if (cloud.busy) return;
+  if (!name){ imp.err = "Give the project a name."; return drawImport(); }
+  cloud.busy = true;
   const pid = crypto.randomUUID();
   modal(`<div style="display:flex;gap:16px;align-items:center"><span class="spin"></span><div><h2 style="font-size:22px">Saving for the team</h2><p class="muted" style="margin:4px 0 0" id="saveProg">Creating the project…</p></div></div>`);
   try{
@@ -1072,9 +1288,15 @@ async function saveToTeam(msgs, name){
       if (error) throw error;
       const p = $("#saveProg"); if (p) p.textContent = `Saved ${Math.min(i+500, rows.length)} of ${rows.length} messages…`;
     }
+    cloud.busy = false;
     await refreshProjects(); await openProject(pid);
     toast(`${name} is saved and shared with your team`);
-  }catch(e){ closeLayer(); toast(`Couldn't save to the team: ${e.message || "try again"}`); }
+  }catch(e){
+    cloud.busy = false;
+    // a half-made project would show up empty for everyone, so remove it (messages cascade with it)
+    try{ await cloud.sb.from("projects").delete().eq("id", pid); }catch(_){}
+    closeLayer(); toast(`Couldn't save to the team: ${e.message || "try again"}. Nothing was shared.`, null, 6000);
+  }
 }
 function acctHTML(){
   if (!cloud.on) return "";
@@ -1131,7 +1353,7 @@ document.addEventListener("click", async e=>{
   if (d.openproj) return openProject(d.openproj);
   if (d.act==="localproj"){ leaveProject(); closeLayer(); return go(state.view); }
   if (d.act==="signout"){ closeLayer(); await cloud.sb.auth.signOut(); return toast("Signed out"); }
-  if (d.imp==="team") return saveToTeam(imp.msgs, ($("#pname")?.value||"").trim() || imp.name);
+  if (d.imp==="team") return saveToTeam(imp.msgs, ($("#pname")?.value||"").trim());
 });
 
 /* ---------- start ---------- */
