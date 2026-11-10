@@ -809,8 +809,10 @@ function drawDetail(){
 // desktop: the drawer starts level with the view (below the tabs) and rides up to the top as the page scrolls
 function placeDrawer(){
   const p = $("#detail .panel"); if (!p) return;
-  if (innerWidth <= 640){ p.style.top = ""; p.style.maxHeight = ""; return; }
+  if (innerWidth <= 640){ p.style.top = ""; p.style.maxHeight = ""; p.style.right = ""; return; }
   const top = Math.max(16, $("#view").getBoundingClientRect().top);
+  // wide screens: keep it inside the app column instead of the window edge
+  p.style.right = Math.max(16, innerWidth - $("#view").getBoundingClientRect().right + 14) + "px";
   p.style.top = top + "px"; p.style.maxHeight = `calc(100vh - ${top + 16}px)`;
 }
 addEventListener("scroll", ()=>requestAnimationFrame(placeDrawer), {passive:true});
