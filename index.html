@@ -144,6 +144,10 @@ button.stat[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--k),var(--clay-
 .quote{background:var(--bg);border-radius:14px;padding:12px 14px;font-size:14px;box-shadow:inset 0 2px 4px var(--lo);white-space:pre-wrap}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;margin:14px 0}
 .kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:600}
+.osel{border:0;border-radius:10px;padding:5px 8px;background:var(--bg);box-shadow:inset 0 1px 3px var(--lo);font-weight:600;max-width:100%}
+.pp{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.pp:first-child{border-top:0}
+#acct .btn .av{width:22px;height:22px;font-size:11px}
 .xbtn{position:absolute;right:12px;top:12px;width:32px;height:32px;border-radius:10px;border:0;background:var(--bg);display:grid;place-items:center}
 .xbtn svg{width:15px;height:15px}
 
@@ -293,6 +297,7 @@ textarea{width:100%;min-height:160px;border:0;border-radius:12px;padding:10px;fo
     </div>
     <div class="top-r">
       <div class="pills" id="pills"></div>
+      <div id="acct"></div>
       <button class="btn ai" data-act="claude" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></svg>Sort with Claude</button>
       <button class="btn wa" data-act="import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-11.8 7L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg>Connect WhatsApp</button>
     </div>
@@ -311,6 +316,8 @@ textarea{width:100%;min-height:160px;border:0;border-radius:12px;padding:10px;fo
 <div class="toast" id="toast" hidden></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
 <script>
 const SAMPLE_NAME = "Reyes Villa · Living Room";
 const SAMPLE = `[27/10/2026, 9:12:04 AM] Daniel: Morning team. Living room for the Reyes villa is the priority this week. Concrete bench and the furniture selections both need to land before Friday.
@@ -485,11 +492,31 @@ try{ const l = localStorage.getItem("threadline3.layout"); if (l) state.layout =
 const chatKey = () => state.name+"|"+state.msgs.length;
 function load(raw, name, isSample){
   const msgs = parseChat(raw); if (!msgs.length) return false;
-  Object.assign(state,{msgs, name, sample:!!isSample, sel:null, flowThread:null, collapsed:{}, foldInit:false, q:"", limits:{}});
-  const saved = store.get("analysis");
-  state.an = (saved && saved.key===chatKey()) ? saved.an : localAnalyze(msgs);
-  state.done = store.get("done:"+chatKey()) || {};
+  loadMsgs(msgs, name, {sample:isSample});
   return true;
+}
+// Shared by local chats and team projects. done/owners come from this device or from the team database.
+function loadMsgs(msgs, name, {sample=false, cloudProject=null, done=null, owners=null} = {}){
+  Object.assign(state,{msgs, name, sample:!!sample, cloud:cloudProject, sel:null, flowThread:null, collapsed:{}, foldInit:false, q:"", limits:{}});
+  const saved = cloudProject ? null : store.get("analysis");
+  state.an = (saved && saved.key===chatKey()) ? saved.an : localAnalyze(msgs);
+  state.done = done || (cloudProject ? {} : store.get("done:"+chatKey()) || {});
+  state.owners = owners || (cloudProject ? {} : store.get("owners:"+chatKey()) || {});
+  applyOwners();
+}
+// Owner picked by a person overrides the one guessed from the chat
+function applyOwners(){
+  state.an.items.forEach(i=>{ if (!("owner0" in i)) i.owner0 = i.owner; i.owner = state.owners[i.id] ?? i.owner0; });
+}
+function setDone(id, on){
+  on ? state.done[id] = 1 : delete state.done[id];
+  if (state.cloud) cloudSaveItem(id); else store.set("done:"+chatKey(), state.done);
+}
+function setOwner(id, name){
+  const it = state.an.items.find(x=>x.id===id); if (!it) return;
+  if (name===null || name===it.owner0) delete state.owners[id]; else state.owners[id] = name;
+  applyOwners();
+  if (state.cloud) cloudSaveItem(id); else store.set("owners:"+chatKey(), state.owners);
 }
 const byId = id => state.msgs[id-1];
 // lookups cached per analysis / per chat, so big chats stay fast
@@ -513,7 +540,8 @@ function header(){
   const an = state.an, it = an.items;
   $("#title").textContent = state.name;
   $("#sub").textContent = an.summary;
-  $("#pills").innerHTML = (state.sample?`<span class="pill"><i style="background:var(--mustard)"></i>Sample chat</span>`:`<span class="pill"><i style="background:var(--green)"></i>Imported from WhatsApp</span>`)
+  $("#acct").innerHTML = acctHTML();
+  $("#pills").innerHTML = (state.cloud?`<span class="pill"><i style="background:var(--sky)"></i>Shared with your team</span>`:state.sample?`<span class="pill"><i style="background:var(--mustard)"></i>Sample chat</span>`:`<span class="pill"><i style="background:var(--green)"></i>On this device</span>`)
     + `<span class="pill"><i style="background:${an.source==="claude"?"var(--coral)":"var(--teal)"}"></i>${an.source==="claude"?"Sorted by Claude":"Sorted on this device"}</span>`;
   const todo = it.filter(i=>groupOf(i)==="todo" && !state.done[i.id]).length, risk = it.filter(i=>i.kind==="risk" && !state.done[i.id]).length;
   $("#stats").innerHTML = [
@@ -671,7 +699,7 @@ function drawDetail(){
   box.innerHTML = `<aside class="panel" aria-label="Item details"><button class="xbtn" data-act="unsel" aria-label="Close">${ICON.x}</button>
     <span class="tag ${TYPE_CLASS[i.kind]}">${TYPE_LABEL[i.kind]}</span> <span class="tag" style="background:color-mix(in oklab,var(--${t.color}) 22%,transparent)">${esc(t.name)}</span>
     <h3>${esc(i.text.length>90?i.text.slice(0,88)+"…":i.text)}</h3>
-    <dl class="kv"><dt>Owner</dt><dd>${i.owner?esc(i.owner):"Not assigned yet"}</dd><dt>Due</dt><dd>${i.due?esc(i.due):"No date in the chat"}</dd><dt>Said by</dt><dd>${esc(m.author)}, ${fmtDay(m.t)} ${fmtTime(m.t)}</dd>${related?`<dt>Relates to</dt><dd>${related}</dd>`:""}</dl>
+    <dl class="kv"><dt><label for="ownerSel">Owner</label></dt><dd><select id="ownerSel" class="osel" data-item="${id}"><option value="">Needs an owner</option>${people().map(p=>`<option value="${esc(p.name)}" ${p.name===i.owner?"selected":""}>${esc(baseName(p.name))}${roleOf(p.name)?` · ${esc(roleOf(p.name))}`:""}</option>`).join("")}${i.owner && !people().byName.has(i.owner)?`<option selected>${esc(i.owner)}</option>`:""}</select>${state.owners[id]!==undefined?` <span class="muted" style="font-size:12px">set by hand</span>`:""}</dd><dt>Due</dt><dd>${i.due?esc(i.due):"No date in the chat"}</dd><dt>Said by</dt><dd>${esc(m.author)}, ${fmtDay(m.t)} ${fmtTime(m.t)}</dd>${related?`<dt>Relates to</dt><dd>${related}</dd>`:""}</dl>
     <div class="eyebrow" style="margin-bottom:6px">From the chat</div><div class="quote">${esc(m.text)}</div>
     <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">${i.kind!=="decision"?`<button class="btn sm ${d?"":"wa"}" data-done="${id}">${d?"Mark as open":"Mark done"}</button>`:""}<button class="btn sm" data-chatfor="${id}">Show in chat</button></div></aside>`;
 }
@@ -835,8 +863,8 @@ function drawImport(){
       <div class="field"><label for="pname" class="eyebrow">Project name</label><input id="pname" value="${esc(imp.name)}" maxlength="60"></div>${imp.err?`<p class="err" role="alert">${esc(imp.err)}</p>`:""}`; }
   modal(`<div style="display:flex;justify-content:space-between;gap:12px"><div><span class="eyebrow">Step ${imp.step} of 2</span><h2>${imp.step===1?"Connect a WhatsApp chat":"Check and name it"}</h2></div><button class="xbtn" style="position:static" data-close aria-label="Close">${ICON.x}</button></div>
     ${body}<div class="mfoot">${imp.step===2?`<button class="btn ghost" data-imp="back">Back</button>`:`<button class="btn ghost" data-act="sample">Use the sample</button>`}
-    ${imp.step===1&&imp.src==="paste"?`<button class="btn wa" data-imp="paste">Check messages</button>`:""}${imp.step===2?`<button class="btn wa" data-imp="open">Build the map</button>`:""}</div>
-    <p class="privacy">Your chat is read in this browser and kept only on this device.${sampleFn?" It goes to Claude only when you press Sort with Claude.":""}</p>`);
+    ${imp.step===1&&imp.src==="paste"?`<button class="btn wa" data-imp="paste">Check messages</button>`:""}${imp.step===2?(cloud.user?`<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-imp="open">Just on this device</button><button class="btn wa" data-imp="team">Save for the team</button></span>`:`<button class="btn wa" data-imp="open">Build the map</button>`):""}</div>
+    <p class="privacy">${imp.step===2&&cloud.user?"Save for the team stores the messages in your team's database, visible only to people you invite. Just on this device keeps them in this browser.":"Your chat is read in this browser and kept only on this device."}${sampleFn?" It goes to Claude only when you press Sort with Claude.":""}${cloud.on&&!cloud.user?" Sign in to share projects with your team.":""}</p>`);
   const drop = $("#drop"), file = $("#file");
   if (drop){ file.onchange = () => file.files[0] && readFile(file.files[0]);
     ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));
@@ -863,6 +891,7 @@ function checkText(text, name){
 }
 function finishImport(){
   const name = ($("#pname")?.value||"").trim(); if (!name){ imp.err = "Give the project a name."; return drawImport(); }
+  if (state.cloud) leaveProject();
   load(imp.text, name, false); store.set("chat",{text:imp.text,name}); store.del("analysis");
   closeLayer(); state.view0 = null; go("map"); toast(`${state.msgs.length} messages mapped into ${state.an.threads.length} topics`);
 }
@@ -907,7 +936,7 @@ document.addEventListener("click", e=>{
   if (d.view) return go(d.view);
   if (d.act==="import") return openImport();
   if (d.act==="claude") return sortWithClaude();
-  if (d.act==="sample"){ store.del("chat"); store.del("analysis"); load(SAMPLE,SAMPLE_NAME,true); closeLayer(); state.view0 = null; return go("map"); }
+  if (d.act==="sample"){ if (state.cloud) leaveProject(); store.del("chat"); store.del("analysis"); load(SAMPLE,SAMPLE_NAME,true); closeLayer(); state.view0 = null; return go("map"); }
   if (d.act==="unsel"){ state.sel = null; return render(); }
   if (d.act==="expand"){ state.collapsed = {}; state.foldInit = true; state.view0 = null; return render(true); }
   if (d.act==="showall"){ GROUPS.forEach(g=>state.show[g.key] = true); state.view0 = null; return render(); }
@@ -930,7 +959,7 @@ document.addEventListener("click", e=>{
     state.view0 = null; if (state.view!=="map") return go("map"); return render(true); }
   if (d.toggle){ state.collapsed[d.toggle] ? delete state.collapsed[d.toggle] : state.collapsed[d.toggle] = 1; state.view0 = null; return render(); }
   if (d.sel){ state.sel = state.sel===d.sel ? null : d.sel; document.querySelectorAll(".n-item.sel,.n-entity.sel").forEach(x=>x.classList.remove("sel")); if (state.sel) b.classList.add("sel"); return drawDetail(); }
-  if (d.done){ const id = d.done; state.done[id] ? delete state.done[id] : state.done[id] = 1; store.set("done:"+chatKey(), state.done); const y = scrollY; render(); scrollTo(0,y); return toast(state.done[id] ? "Marked done" : "Marked open"); }
+  if (d.done){ const id = +d.done; setDone(id, !state.done[id]); const y = scrollY; render(); scrollTo(0,y); return toast(state.done[id] ? "Marked done" : "Marked open"); }
   if (d.flow){ state.flowThread = d.flow; return render(true); }
   if (d.flowsel){ state.sel = "i:"+d.flowsel; return go("map"); }
   if (d.chatfor){ const m = byId(+d.chatfor); state.q = m.text.slice(0,24); return go("chat"); }
@@ -947,14 +976,163 @@ document.addEventListener("drop", e=>{
   const id = dragId; dragId = null; const it = state.an.items.find(x=>x.id===+id); if (!it) return;
   const to = col.dataset.col;
   if (to==="decided") return toast("Decisions come from the chat. Drag to Done to finish an item.");
-  if (to==="donecol") state.done[id] = 1;
-  else if ((to==="todo" && groupOf(it)==="todo") || (to==="risk" && it.kind==="risk")) delete state.done[id];
+  if (to==="donecol") setDone(+id, true);
+  else if ((to==="todo" && groupOf(it)==="todo") || (to==="risk" && it.kind==="risk")) setDone(+id, false);
   else return toast(`That item belongs in ${it.kind==="risk"?"Risks":"To do"}.`);
-  store.set("done:"+chatKey(), state.done); render(); toast(state.done[id] ? "Moved to Done" : "Reopened");
+  render(); toast(state.done[id] ? "Moved to Done" : "Reopened");
 });
 document.addEventListener("input", e=>{ if (e.target.id!=="search") return; state.q = e.target.value; const p = e.target.selectionStart; render(); const s = $("#search"); s.focus(); s.setSelectionRange(p,p); });
 document.addEventListener("keydown", e=>{ if (e.key==="Escape"){ if ($("#layer").innerHTML) closeLayer(); else if (state.sel){ state.sel = null; drawDetail(); } } if (e.key==="Enter" && e.target.id==="pname") finishImport(); });
 let rT; addEventListener("resize", ()=>{ clearTimeout(rT); rT = setTimeout(()=>{ if (state.view==="map"){ state.view0 = null; drawMap(false); } if (state.view==="flow") drawFlowArrows(); if (state.view==="actions") render(); }, 150); });
+
+document.addEventListener("change", e=>{
+  if (e.target.id==="ownerSel"){ const id = +e.target.dataset.item; setOwner(id, e.target.value || ""); render(); toast(e.target.value ? `Assigned to ${baseName(e.target.value)}` : "Marked as needing an owner"); }
+});
+
+/* ---------- team mode (Supabase): sign-in, shared projects, live ticks ---------- */
+const CFG = window.THREADLINE_CONFIG || {};
+const cloud = {on: !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase), sb:null, user:null, projects:[], chan:null, busy:false};
+if (cloud.on){ try{ cloud.sb = supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey); }catch(e){ cloud.on = false; } }
+const seqOf = id => byId(id)?.seq ?? id;
+async function cloudInit(){
+  if (!cloud.on) return;
+  const {data:{session}} = await cloud.sb.auth.getSession();
+  cloud.user = session?.user || null;
+  cloud.sb.auth.onAuthStateChange((ev, s)=>{ const was = cloud.user?.id; cloud.user = s?.user || null; if ((cloud.user?.id||null)!==(was||null)) afterAuth(); });
+  await afterAuth();
+}
+async function afterAuth(){
+  if (!cloud.user){ cloud.projects = []; leaveProject(); render(); return; }
+  try{ const {data:n} = await cloud.sb.rpc("accept_invites"); if (n) toast(`You joined ${n} shared project${n>1?"s":""}`); }catch(e){}
+  await refreshProjects();
+  const last = store.get("cloudProject");
+  if (last && cloud.projects.some(p=>p.id===last)) await openProject(last); else render();
+}
+async function refreshProjects(){
+  const {data, error} = await cloud.sb.from("projects").select("id,name,created_at").order("created_at", {ascending:false});
+  if (!error) cloud.projects = data || [];
+}
+async function fetchAll(table, cols, pid, order){
+  let out = [];
+  for (let from = 0; ; from += 1000){
+    const {data, error} = await cloud.sb.from(table).select(cols).eq("project_id", pid).order(order).range(from, from + 999);
+    if (error) throw error; out = out.concat(data); if (data.length < 1000) break;
+  }
+  return out;
+}
+async function openProject(pid){
+  const p = cloud.projects.find(x=>x.id===pid); if (!p) return;
+  modal(`<div style="display:flex;gap:16px;align-items:center"><span class="spin"></span><div><h2 style="font-size:22px">Opening ${esc(p.name)}</h2><p class="muted" style="margin:4px 0 0">Loading the shared chat and the team's ticks.</p></div></div>`);
+  try{
+    const rows = await fetchAll("messages", "seq,sent_at,author,body,has_media", pid, "seq");
+    const st = await fetchAll("item_state", "seq,done,owner", pid, "seq");
+    const msgs = rows.map((r,i)=>({id:i+1, seq:r.seq, t:new Date(r.sent_at), author:r.author, text:r.body, media:r.has_media}));
+    const idOf = new Map(msgs.map(m=>[m.seq, m.id])), done = {}, owners = {};
+    st.forEach(r=>{ const id = idOf.get(r.seq); if (!id) return; if (r.done) done[id] = 1; if (r.owner!==null) owners[id] = r.owner; });
+    if (!msgs.length) throw new Error("This project has no messages yet.");
+    loadMsgs(msgs, p.name, {cloudProject:{id:p.id, name:p.name}, done, owners});
+    store.set("cloudProject", pid); subscribe(pid, idOf);
+    closeLayer(); state.view0 = null; go(state.view);
+  }catch(e){ closeLayer(); toast(`Couldn't open the project: ${e.message || "try again"}`); }
+}
+function subscribe(pid, idOf){
+  if (cloud.chan){ cloud.sb.removeChannel(cloud.chan); cloud.chan = null; }
+  cloud.chan = cloud.sb.channel("project:"+pid)
+    .on("postgres_changes", {event:"*", schema:"public", table:"item_state", filter:`project_id=eq.${pid}`}, ({new:r})=>{
+      if (!r || !state.cloud || state.cloud.id!==pid) return;
+      const id = idOf.get(r.seq); if (!id) return;
+      r.done ? state.done[id] = 1 : delete state.done[id];
+      if (r.owner===null) delete state.owners[id]; else state.owners[id] = r.owner;
+      applyOwners();
+      if (document.activeElement?.id!=="search" && document.activeElement?.id!=="ownerSel"){ const y = scrollY; render(); scrollTo(0, y); }
+    }).subscribe();
+}
+async function cloudSaveItem(id){
+  if (!state.cloud) return;
+  const row = {project_id:state.cloud.id, seq:seqOf(id), done:!!state.done[id], owner:state.owners[id] ?? null};
+  const {error} = await cloud.sb.from("item_state").upsert(row, {onConflict:"project_id,seq"});
+  if (error) toast("Couldn't save to the team. Check your connection and try again.");
+}
+function leaveProject(){
+  if (cloud.chan){ cloud.sb.removeChannel(cloud.chan); cloud.chan = null; }
+  if (!state.cloud) return;
+  store.del("cloudProject");
+  const saved = store.get("chat"); if (!(saved && load(saved.text, saved.name, false))) load(SAMPLE, SAMPLE_NAME, true);
+  state.view0 = null;
+}
+async function saveToTeam(msgs, name){
+  const pid = crypto.randomUUID();
+  modal(`<div style="display:flex;gap:16px;align-items:center"><span class="spin"></span><div><h2 style="font-size:22px">Saving for the team</h2><p class="muted" style="margin:4px 0 0" id="saveProg">Creating the project…</p></div></div>`);
+  try{
+    let {error} = await cloud.sb.from("projects").insert({id:pid, name, created_by:cloud.user.id});
+    if (error) throw error;
+    const rows = msgs.map(m=>({project_id:pid, seq:m.id, sent_at:m.t.toISOString(), author:m.author, body:m.text, has_media:!!m.media}));
+    for (let i = 0; i < rows.length; i += 500){
+      ({error} = await cloud.sb.from("messages").insert(rows.slice(i, i+500)));
+      if (error) throw error;
+      const p = $("#saveProg"); if (p) p.textContent = `Saved ${Math.min(i+500, rows.length)} of ${rows.length} messages…`;
+    }
+    await refreshProjects(); await openProject(pid);
+    toast(`${name} is saved and shared with your team`);
+  }catch(e){ closeLayer(); toast(`Couldn't save to the team: ${e.message || "try again"}`); }
+}
+function acctHTML(){
+  if (!cloud.on) return "";
+  if (!cloud.user) return `<button class="btn" data-act="signin">Sign in</button>`;
+  return `<button class="btn" data-act="team" title="${esc(cloud.user.email)}"><span class="av" style="--pc:var(--teal)">${esc((cloud.user.email||"?")[0].toUpperCase())}</span>Team</button>`;
+}
+function openSignIn(msg=""){
+  modal(`<div style="display:flex;justify-content:space-between;gap:12px"><div><span class="eyebrow">Team</span><h2>Sign in to share projects</h2></div><button class="xbtn" style="position:static" data-close aria-label="Close">${ICON.x}</button></div>
+    <p class="muted" style="margin:8px 0 0">We'll email you a sign-in link. No password needed. Use the email you were invited with.</p>
+    <div class="field"><label for="email" class="eyebrow">Email</label><input id="email" type="email" autocomplete="email" placeholder="you@studio.com"></div>
+    ${msg?`<p class="${msg.startsWith("Check")?"":"err"}" role="status" style="font-size:14px">${esc(msg)}</p>`:""}
+    <div class="mfoot"><span></span><button class="btn wa" data-act="sendlink">Email me a sign-in link</button></div>`);
+}
+async function sendLink(){
+  const email = ($("#email")?.value || "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return openSignIn("Enter a full email address, like you@studio.com.");
+  const {error} = await cloud.sb.auth.signInWithOtp({email, options:{emailRedirectTo: location.origin + location.pathname}});
+  openSignIn(error ? `Couldn't send the link: ${error.message}` : `Check ${email} for the sign-in link. You can close this.`);
+}
+async function openTeam(){
+  await refreshProjects();
+  let members = [], invites = [];
+  if (state.cloud){
+    const pid = state.cloud.id;
+    members = (await cloud.sb.from("project_members").select("user_id,email,role").eq("project_id", pid)).data || [];
+    invites = (await cloud.sb.from("project_invites").select("id,email").eq("project_id", pid)).data || [];
+  }
+  const share = state.cloud ? `<div class="eyebrow" style="margin-top:18px">People on ${esc(state.cloud.name)}</div>
+      <div style="margin-top:6px">${members.map(m=>`<div class="pp"><span class="av" style="--pc:var(--teal)">${esc((m.email||"?")[0].toUpperCase())}</span><span>${esc(m.email||"Team member")}${m.user_id===cloud.user.id?" (you)":""}</span><span class="spacer"></span><span class="muted">${m.role==="owner"?"Owner":"Member"}</span></div>`).join("")}
+      ${invites.map(v=>`<div class="pp"><span class="av" style="--pc:var(--mustard)">?</span><span>${esc(v.email)}</span><span class="spacer"></span><span class="muted">Invited</span><button class="link" data-uninvite="${v.id}">Cancel</button></div>`).join("")}</div>
+      <div class="field" style="flex-direction:row;gap:8px;align-items:flex-end"><div style="flex:1;display:flex;flex-direction:column;gap:6px"><label for="invite" class="eyebrow">Invite by email</label><input id="invite" type="email" placeholder="teammate@studio.com"></div><button class="btn wa" data-act="invite">Invite</button></div>
+      <p class="muted" style="font-size:13px;margin:6px 0 0">They sign in at <b>${esc(location.origin + location.pathname)}</b> with that email, and the project appears for them.</p>`
+    : `<p class="muted" style="margin-top:14px">You're looking at a chat saved on this device only. Open a shared project, or import a chat and choose <b>Save for the team</b>.</p>`;
+  modal(`<div style="display:flex;justify-content:space-between;gap:12px"><div><span class="eyebrow">Signed in as ${esc(cloud.user.email)}</span><h2>Team projects</h2></div><button class="xbtn" style="position:static" data-close aria-label="Close">${ICON.x}</button></div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">${cloud.projects.map(p=>`<button class="way" data-openproj="${p.id}" aria-pressed="${state.cloud?.id===p.id}"><b>${esc(p.name)}</b><span>Shared · created ${fmtShort(new Date(p.created_at))}</span></button>`).join("") || `<p class="muted">No shared projects yet.</p>`}
+      <button class="way" data-act="localproj" aria-pressed="${!state.cloud}"><b>On this device</b><span>${esc(store.get("chat")?.name || SAMPLE_NAME)} · not shared</span></button></div>
+    ${share}
+    <div class="mfoot"><button class="btn ghost" data-act="signout">Sign out</button><button class="btn" data-act="import">Import a chat</button></div>`);
+}
+async function invite(){
+  const email = ($("#invite")?.value || "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast("Enter a full email address to invite.");
+  const {error} = await cloud.sb.from("project_invites").insert({project_id:state.cloud.id, email});
+  toast(error ? (error.code==="23505" ? "That person is already invited." : `Couldn't invite: ${error.message}`) : `Invited ${email}`);
+  openTeam();
+}
+document.addEventListener("click", async e=>{
+  const b = e.target.closest("button"); if (!b || !cloud.on) return; const d = b.dataset;
+  if (d.act==="signin") return openSignIn();
+  if (d.act==="sendlink") return sendLink();
+  if (d.act==="team") return openTeam();
+  if (d.act==="invite") return invite();
+  if (d.uninvite){ await cloud.sb.from("project_invites").delete().eq("id", d.uninvite); return openTeam(); }
+  if (d.openproj) return openProject(d.openproj);
+  if (d.act==="localproj"){ leaveProject(); closeLayer(); return go(state.view); }
+  if (d.act==="signout"){ closeLayer(); await cloud.sb.auth.signOut(); return toast("Signed out"); }
+  if (d.imp==="team") return saveToTeam(imp.msgs, ($("#pname")?.value||"").trim() || imp.name);
+});
 
 /* ---------- start ---------- */
 const saved = store.get("chat");
@@ -968,6 +1146,7 @@ render(true);
 if (PARAMS.get("open")==="import") openImport();
 document.fonts?.ready.then(()=>{ if (state.view==="map"){ state.view0 = null; drawMap(false); } if (state.view==="flow") drawFlowArrows(); });
 (async()=>{ try{ sampleFn = await window.claude?.use?.("sample"); }catch(e){ sampleFn = null; } if (sampleFn) document.querySelectorAll('[data-act="claude"]').forEach(b=>b.hidden=false); })();
+cloudInit().catch(()=>toast("Team sign-in is unavailable right now. Your chats on this device still work."));
 </script>
 
 </body></html>
