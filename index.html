@@ -273,7 +273,8 @@ textarea{width:100%;min-height:160px;border:0;border-radius:12px;padding:10px;fo
   .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
   .top-r{justify-content:flex-start;width:100%}
   .tabs{display:flex;width:100%;overflow-x:auto;flex-wrap:nowrap}
-  .tab{padding:8px 10px}
+  .tab{padding:8px 10px;white-space:nowrap;flex:none}
+  .tsep{display:none}
   .ways,.howto,.lanes{grid-template-columns:1fr}
   .preview{grid-template-columns:1fr 1fr}
   .msg{grid-template-columns:1fr;gap:2px}
@@ -432,7 +433,8 @@ function parseChat(raw){
     h=+h; if (ap){const pm=/p/i.test(ap); if(pm&&h<12)h+=12; if(!pm&&h===12)h=0;}
     const text = r.text.trim();
     if (/end-to-end encrypted|created (this )?group|changed the (subject|group)|joined using this group|security code changed/i.test(text)) return;
-    const media = (text.match(MEDIA_RE)||[]).length > 0, clean = text.replace(MEDIA_RE,"").trim();
+    if (/^(this message was deleted|you deleted this message|null)$/i.test(text)) return;
+    const media = (text.match(MEDIA_RE)||[]).length > 0, clean = text.replace(MEDIA_RE,"").replace(/\s*<this message was edited>/gi,"").trim();
     if (!clean && !media) return;
     msgs.push({id:msgs.length+1, t:new Date(y,mo-1,d,h,+mi,+(s||0)), author:r.author, text:clean, media});
   });
@@ -483,19 +485,25 @@ try{ const l = localStorage.getItem("threadline3.layout"); if (l) state.layout =
 const chatKey = () => state.name+"|"+state.msgs.length;
 function load(raw, name, isSample){
   const msgs = parseChat(raw); if (!msgs.length) return false;
-  Object.assign(state,{msgs, name, sample:!!isSample, sel:null, flowThread:null, collapsed:{}, foldInit:false, q:""});
+  Object.assign(state,{msgs, name, sample:!!isSample, sel:null, flowThread:null, collapsed:{}, foldInit:false, q:"", limits:{}});
   const saved = store.get("analysis");
   state.an = (saved && saved.key===chatKey()) ? saved.an : localAnalyze(msgs);
   state.done = store.get("done:"+chatKey()) || {};
   return true;
 }
 const byId = id => state.msgs[id-1];
-const threadOf = id => state.an.threads.find(t=>t.ids.includes(id));
+// lookups cached per analysis / per chat, so big chats stay fast
+let _tmap = null, _tmapFor = null, _ppl = null, _pplFor = null;
+const threadOf = id => { if (_tmapFor!==state.an){ _tmap = new Map(); state.an.threads.forEach(t=>t.ids.forEach(i=>_tmap.set(i,t))); _tmapFor = state.an; } return _tmap.get(id); };
 function people(){
+  if (_pplFor===state.msgs) return _ppl;
   const map = {}; state.msgs.forEach(m=>{ (map[m.author] ||= {name:m.author,n:0}).n++; });
-  return Object.values(map).sort((a,b)=>b.n-a.n).map((p,i)=>({...p, color:PCOL[i%PCOL.length]}));
+  _ppl = Object.values(map).sort((a,b)=>b.n-a.n).map((p,i)=>({...p, color:PCOL[i%PCOL.length]})); _ppl.byName = new Map(_ppl.map(p=>[p.name,p])); _pplFor = state.msgs;
+  return _ppl;
 }
-const pcolor = n => `var(--${(people().find(p=>p.name===n)||{color:"teal"}).color})`;
+const pcolor = n => `var(--${(people().byName.get(n)||{color:"teal"}).color})`;
+const PAGE = 150;
+const more = (shown, total, key) => total > shown ? `<button class="btn sm" style="margin:6px auto 0;display:flex" data-more="${key}">Show ${Math.min(PAGE, total-shown)} more of ${total-shown} left</button>` : "";
 const avatar = n => `<span class="av" style="--pc:${pcolor(n)}" title="${esc(n)}">${esc(initials(n))}</span>`;
 const isOpen = i => i.kind!=="decision" && !state.done[i.id];
 const groupOf = i => i.kind==="decision" ? "done" : i.kind==="risk" ? "risk" : "todo";
@@ -550,9 +558,11 @@ function buildTree(){
       if (!state.show[g.key]) return;
       let kids;
       if (g.key==="brand") kids = entitiesFor(t.ids).map(e=>({id:`e:${t.key}:${e.label}`, kind:"entity", e, t}));
-      else kids = an.items.filter(i=>t.ids.includes(i.id) && groupOf(i)===g.key).map(i=>({id:"i:"+i.id, kind:"item", i, t}));
+      else kids = an.items.filter(i=>threadOf(i.id)===t && groupOf(i)===g.key).map(i=>({id:"i:"+i.id, kind:"item", i, t}));
       if (!kids.length) return;
-      tn.children.push({id:`g:${t.key}:${g.key}`, kind:"group", g, t, count:g.key==="todo"?kids.filter(k=>!state.done[k.i.id]).length:kids.length, total:kids.length, children:kids});
+      const total = kids.length, count = g.key==="todo" ? kids.filter(k=>!state.done[k.i.id]).length : total;
+      if (total > 30 && g.key!=="brand"){ kids = kids.slice(-30); kids.push({id:`x:${t.key}:${g.key}`, kind:"entity", e:{label:`+ ${total - 30} more in Tasks`, ids:[]}, t, more:true}); }
+      tn.children.push({id:`g:${t.key}:${g.key}`, kind:"group", g, t, count, total, children:kids});
     });
     root.children.push(tn);
   });
@@ -567,6 +577,7 @@ function nodeHTML(n){
   }
   if (n.kind==="root") return `<div class="node n-root" data-id="root"><div class="eyebrow" style="color:#fff;opacity:.8">Project</div><h3>${esc(state.name)}</h3><small>${state.msgs.length} messages · ${people().length} people</small></div>`;
   if (n.kind==="thread") return `<button class="node n-thread side-${n.side}" data-id="${n.id}" data-toggle="${n.id}" style="--c:var(--${n.t.color})" aria-expanded="${!state.collapsed[n.id]}"><h3>${esc(n.t.name)}</h3><small>${n.t.ids.length} message${n.t.ids.length===1?"":"s"}</small>${tog}</button>`;
+  if (n.more) return `<button class="node n-entity" data-id="${n.id}" data-gomore="1" style="color:var(--teal)">${esc(n.e.label)}</button>`;
   if (n.kind==="entity") return `<button class="node n-entity ${state.sel===n.id?"sel":""}" data-id="${n.id}" data-sel="${n.id}"><span class="sw" style="width:10px;height:10px;border-radius:3px;background:var(--brand)"></span>${esc(n.e.label)}<span class="cnt">${n.e.ids.length}×</span></button>`;
   const i = n.i, m = byId(i.id), d = !!state.done[i.id];
   return `<button class="node n-item ${d?"is-done":""} ${state.sel===n.id?"sel":""}" data-id="${n.id}" data-sel="${n.id}" style="--k:var(--${TYPE_COLOR[i.kind]})"><div class="tx">${esc(i.text)}</div>
@@ -668,25 +679,28 @@ function drawDetail(){
 /* ---------- flow ---------- */
 function vFlow(){
   const an = state.an; const t = an.threads.find(x=>x.key===state.flowThread) || an.threads[0]; state.flowThread = t.key;
-  const its = an.items.filter(i=>t.ids.includes(i.id)).sort((a,b)=>a.id-b.id);
+  const all = an.items.filter(i=>threadOf(i.id)===t).sort((a,b)=>a.id-b.id);
+  const show = (state.limits ||= {})["flow:"+t.key] || 40, skip = Math.max(0, all.length - show), its = all.slice(skip);
   const lanes = [["request","Asked","todo"],["task","Committed","todo"],["decision","Decided","done"],["risk","Risk raised","risk"]];
   const ents = entitiesFor(t.ids);
   return `<section class="desk"><div class="flow-wrap">
     <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px"><h2 style="font-size:26px">${esc(t.name)}</h2><span class="muted">How this topic moved, in order. Follow the numbers.</span></div>
+    ${skip?`<div style="margin:0 0 14px"><span class="muted" style="font-size:13px">Showing the latest ${its.length} of ${all.length} steps · </span><button class="link" data-flowmore="${t.key}">Show 40 earlier steps</button></div>`:""}
     ${ents.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px"><span class="eyebrow" style="align-self:center">Relates to</span>${ents.map(e=>`<span class="tag t-brand">${esc(e.label)} · ${e.ids.length}</span>`).join("")}</div>`:""}
     <div class="lanes" id="lanes">${lanes.map(([k,l,c])=>`<div class="lane-h" style="grid-column:${lanes.findIndex(x=>x[0]===k)+1};grid-row:1"><i style="background:var(--${c})"></i>${l}</div>`).join("")}
-      ${its.map((i,n)=>{const m=byId(i.id), d=!!state.done[i.id]; return `<button class="fcard ${d?"is-done":""} reveal" data-fl="${n}" data-flowsel="${i.id}" style="grid-column:${lanes.findIndex(x=>x[0]===i.kind)+1};grid-row:${n+2};--k:var(--${TYPE_COLOR[i.kind]});--d:${n*70}ms"><span class="step-n">${n+1}</span><div class="tx">${esc(i.text)}</div><div class="meta">${avatar(m.author)}${esc(baseName(m.author))} · ${fmtShort(m.t)} ${fmtTime(m.t)}${i.due?` · <span class="due">${esc(i.due)}</span>`:""}${d?` · <span class="tag t-done">Done</span>`:""}</div></button>`}).join("") || `<p class="muted" style="grid-column:1/-1">No decisions, asks or risks in this topic yet.</p>`}
+      ${its.map((i,n)=>{const m=byId(i.id), d=!!state.done[i.id]; return `<button class="fcard ${d?"is-done":""} reveal" data-fl="${n}" data-flowsel="${i.id}" style="grid-column:${lanes.findIndex(x=>x[0]===i.kind)+1};grid-row:${n+2};--k:var(--${TYPE_COLOR[i.kind]});--d:${Math.min(n,20)*70}ms"><span class="step-n">${skip+n+1}</span><div class="tx">${esc(i.text)}</div><div class="meta">${avatar(m.author)}${esc(baseName(m.author))} · ${fmtShort(m.t)} ${fmtTime(m.t)}${i.due?` · <span class="due">${esc(i.due)}</span>`:""}${d?` · <span class="tag t-done">Done</span>`:""}</div></button>`}).join("") || `<p class="muted" style="grid-column:1/-1">No decisions, asks or risks in this topic yet.</p>`}
       <svg class="flow-svg" id="flowsvg"></svg>
     </div></div></section>`;
 }
 function drawFlowArrows(){
   const box = $("#lanes"), svg = $("#flowsvg"); if (!box || !svg) return;
-  const r0 = box.getBoundingClientRect(); const cards = [...box.querySelectorAll(".fcard")];
-  svg.setAttribute("width", r0.width); svg.setAttribute("height", r0.height);
+  // layout positions (offset*) ignore the slide-in transform, so arrows land right even mid-animation
+  const cards = [...box.querySelectorAll(".fcard")];
+  svg.setAttribute("width", box.offsetWidth); svg.setAttribute("height", box.offsetHeight);
   let out = `<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
   for (let k=0;k<cards.length-1;k++){
-    const a = cards[k].getBoundingClientRect(), b = cards[k+1].getBoundingClientRect();
-    const x1 = a.left - r0.left + a.width/2, y1 = a.bottom - r0.top, x2 = b.left - r0.left + b.width/2, y2 = b.top - r0.top;
+    const a = cards[k], b = cards[k+1];
+    const x1 = a.offsetLeft + a.offsetWidth/2, y1 = a.offsetTop + a.offsetHeight, x2 = b.offsetLeft + b.offsetWidth/2, y2 = b.offsetTop;
     const my = y1 + (y2 - y1)/2, r = Math.min(10, Math.abs(x2-x1)/2, (y2-y1)/4), dir = Math.sign(x2-x1);
     out += Math.abs(x2-x1) < 4 ? `<path d="M${x1},${y1} V${y2-3}" marker-end="url(#ah)"/>`
       : `<path d="M${x1},${y1} V${my-r} Q${x1},${my} ${x1+dir*r},${my} H${x2-dir*r} Q${x2},${my} ${x2},${my+r} V${y2-3}" marker-end="url(#ah)"/>`;
@@ -721,11 +735,12 @@ function vKanban(){
     {key:"donecol", label:"Done", color:"teal", hint:"Drag a card here", its:all.filter(i=>state.done[i.id])}
   ];
   return `<section class="desk"><div class="kanban">${cols.map(c=>`<div class="kcol" data-col="${c.key}"><div class="kh"><i style="background:var(--${c.color})"></i><b>${c.label}</b><span class="cnt">${c.its.length}</span></div><p class="kh-hint">${c.hint}</p>
-    <div class="kbody">${c.its.map(i=>taskCard(i,"reveal")).join("") || `<div class="kempty">${c.key==="donecol"?"Drop finished items here":"Nothing here"}</div>`}</div></div>`).join("")}</div></section>`;
+    <div class="kbody">${c.its.slice(-lim("k"+c.key)).reverse().map(i=>taskCard(i,"reveal")).join("") || `<div class="kempty">${c.key==="donecol"?"Drop finished items here":"Nothing here"}</div>`}${more(Math.min(lim("k"+c.key), c.its.length), c.its.length, "k"+c.key)}</div></div>`).join("")}</div></section>`;
 }
+const lim = key => (state.limits ||= {})[key] || PAGE;
 function vGrid(){
   const its = taskItems().sort((a,b)=>(+!!state.done[a.id])-(+!!state.done[b.id]) || b.id-a.id);
-  return `<section class="desk"><div class="tgrid">${its.map(i=>taskCard(i,"reveal")).join("") || `<p class="muted">Nothing matches these filters.</p>`}</div></section>`;
+  return `<section class="desk"><div class="tgrid">${its.slice(0, lim("grid")).map(i=>taskCard(i,"reveal")).join("") || `<p class="muted">Nothing matches these filters.</p>`}</div>${more(Math.min(lim("grid"), its.length), its.length, "grid")}<div style="height:18px"></div></section>`;
 }
 function vList(){
   const its = taskItems(), dir = state.sortDir;
@@ -733,10 +748,10 @@ function vList(){
   its.sort((a,b)=>{ const x = key(a), y = key(b); return (x>y?1:x<y?-1:0)*dir; });
   const th = (k,l) => `<th><button class="sortb" data-sort="${k}" aria-sort="${state.sort===k?(dir>0?"ascending":"descending"):"none"}">${l}${state.sort===k?(dir>0?" ↑":" ↓"):""}</button></th>`;
   return `<section class="desk"><div class="pad"><div class="tablewrap"><table class="tlist"><thead><tr><th style="width:40px"></th>${th("item","Item")}${th("type","Type")}${th("topic","Topic")}${th("owner","Owner")}${th("due","Due")}${th("date","Raised")}</tr></thead><tbody>
-    ${its.map(i=>{const m = byId(i.id), d = !!state.done[i.id]; return `<tr class="${d?"is-done":""}"><td>${i.kind!=="decision"?`<button class="check" data-done="${i.id}" aria-pressed="${d}" aria-label="Mark ${d?"open":"done"}">${ICON.check}</button>`:""}</td>
+    ${its.slice(0, lim("list")).map(i=>{const m = byId(i.id), d = !!state.done[i.id]; return `<tr class="${d?"is-done":""}"><td>${i.kind!=="decision"?`<button class="check" data-done="${i.id}" aria-pressed="${d}" aria-label="Mark ${d?"open":"done"}">${ICON.check}</button>`:""}</td>
       <td class="tx"><button class="rowlink" data-flowsel="${i.id}" title="Open on the mind map">${esc(i.text)}</button></td><td><span class="tag ${TYPE_CLASS[i.kind]}">${TYPE_LABEL[i.kind]}</span></td><td>${topicTag(threadOf(i.id))}</td>
       <td>${i.owner?`<span class="who">${avatar(i.owner)}${esc(baseName(i.owner))}</span>`:`<span class="muted">${i.kind==="request"?"Needs an owner":"—"}</span>`}</td><td>${i.due?`<span class="due">${esc(i.due)}</span>`:`<span class="muted">—</span>`}</td><td class="mono" style="font-size:12px">${fmtShort(m.t)} ${fmtTime(m.t)}</td></tr>`}).join("") || `<tr><td colspan="7" class="muted">Nothing matches these filters.</td></tr>`}
-  </tbody></table></div></div></section>`;
+  </tbody></table></div>${more(Math.min(lim("list"), its.length), its.length, "list")}</div></section>`;
 }
 function vPeople(){
   const open = state.an.items.filter(i=>i.kind!=="decision" && !(state.hideDone && state.done[i.id]));
@@ -747,9 +762,10 @@ function vPeople(){
   const cards = order.map(k=>{
     const list = by[k].sort((a,b)=>(+!!state.done[a.id])-(+!!state.done[b.id]) || a.id-b.id), left = list.filter(isOpen).length;
     return `<div class="owner reveal ${k==="__none"?"unassigned":""}"><h3>${k==="__none"?`<span class="av" style="--pc:var(--todo)">?</span>Needs an owner`:`${avatar(k)}${esc(baseName(k))}${roleOf(k)?`<span class="role">${esc(roleOf(k))}</span>`:""}`}<span class="cnt">${left} open</span></h3>
-      ${list.map(i=>{const m=byId(i.id), t=threadOf(i.id), d=!!state.done[i.id]; return `<div class="act ${d?"is-done":""}"><button class="check" data-done="${i.id}" aria-pressed="${d}" aria-label="Mark ${d?"open":"done"}">${ICON.check}</button>
+      ${list.slice(0, lim("p"+k)).map(i=>{const m=byId(i.id), t=threadOf(i.id), d=!!state.done[i.id]; return `<div class="act ${d?"is-done":""}"><button class="check" data-done="${i.id}" aria-pressed="${d}" aria-label="Mark ${d?"open":"done"}">${ICON.check}</button>
         <div style="min-width:0"><div class="tx">${esc(i.text)}</div><div class="meta"><span class="tag ${TYPE_CLASS[i.kind]}">${TYPE_LABEL[i.kind]}</span><span class="tag" style="background:color-mix(in oklab,var(--${t.color}) 22%,transparent)">${esc(t.name)}</span></div>
         <div class="when">${k==="__none"||i.kind==="risk"?`${esc(baseName(m.author))} raised it · `:""}${fmtShort(m.t)}${i.due?` · due <span class="due">${esc(i.due)}</span>`:""}</div></div></div>`}).join("")}
+      ${more(Math.min(lim("p"+k), list.length), list.length, "p"+k)}
     </div>`;});
   cards.forEach((html,n)=>{ const c = cols.reduce((a,b)=>b.h<a.h?b:a); c.html.push(html); c.h += 1.2 + by[order[n]].length; });
   if (!order.length) return `<section class="desk"><div class="pad"><p class="muted">Nothing to do. Every ask in this chat is handled.</p></div></section>`;
@@ -760,23 +776,27 @@ function vPeople(){
 function vChat(){
   const q = state.q.toLowerCase(), kind = {}; state.an.items.forEach(i=>kind[i.id]=i.kind);
   let last = ""; const rows = [];
-  state.msgs.filter(m=>!q || m.text.toLowerCase().includes(q) || m.author.toLowerCase().includes(q)).forEach(m=>{
+  const hits = state.msgs.filter(m=>!q || m.text.toLowerCase().includes(q) || m.author.toLowerCase().includes(q)), cap = lim("chat") * 2;
+  if (hits.length > cap) rows.push(`<button class="btn sm" style="margin:6px auto 12px;display:flex" data-more="chat">Show ${Math.min(PAGE*2, hits.length-cap)} earlier messages</button>`);
+  hits.slice(-cap).forEach(m=>{
     const d = fmtDay(m.t); if (d!==last){ rows.push(`<div class="daysep">${d}</div>`); last = d; }
     const t = threadOf(m.id);
     rows.push(`<div class="msg" id="m${m.id}" style="--c:var(--${t?.color||"plum"})"><div><div class="who">${esc(m.author)}</div><div class="when mono">${fmtTime(m.t)}</div></div><div style="min-width:0"><div class="what">${esc(m.text)}${m.media?` <span class="muted">${ICON.cam} photo</span>`:""}</div><div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">${t?`<span class="tag" style="background:color-mix(in oklab,var(--${t.color}) 22%,transparent)">${esc(t.name)}</span>`:""}${kind[m.id]?`<span class="tag ${TYPE_CLASS[kind[m.id]]}">${TYPE_LABEL[kind[m.id]]}</span>`:""}</div></div></div>`);
   });
-  const n = rows.filter(r=>r.startsWith('<div class="msg"')).length;
+  const n = hits.length;
   return `<section class="desk"><div class="pad"><div class="muted" style="font-size:13px;margin-bottom:6px">${state.q?`${n} message${n===1?"":"s"} match “${esc(state.q)}” · <button class="link" data-act="clearq">Clear search</button>`:`${state.msgs.length} messages, newest last`}</div>${rows.join("") || `<p class="muted">No messages match. Try a shorter word.</p>`}</div></section>`;
 }
 function outText(k){
-  const an = state.an, open = an.items.filter(isOpen), list = (a,f) => a.length ? a.map(f).join("\n") : "• None";
+  const an = state.an, open = an.items.filter(isOpen);
   const dueOf = i => i.due && !i.text.toLowerCase().includes(i.due.toLowerCase()) ? ` (${i.due})` : "";
-  const byThread = arr => an.threads.map(t=>{ const its = arr.filter(i=>t.ids.includes(i.id)); return its.length ? `_${t.name}_\n` + its.map(i=>`• ${i.text}${i.owner?` – ${baseName(i.owner)}`:""}${dueOf(i)}`).join("\n") : ""; }).filter(Boolean).join("\n\n") || "• None";
+  // long chats: keep each list to its most recent entries so the message stays sendable
+  const list = (a, f, n = 12) => !a.length ? "• None" : a.slice(-n).map(f).join("\n") + (a.length > n ? `\n…and ${a.length - n} more in Threadline` : "");
+  const byThread = arr => an.threads.map(t=>{ const its = arr.filter(i=>threadOf(i.id)===t); return its.length ? `_${t.name}_\n` + list(its, i=>`• ${i.text}${i.owner?` – ${baseName(i.owner)}`:""}${dueOf(i)}`, 8) : ""; }).filter(Boolean).join("\n\n") || "• None";
   if (k==="status") return `*${state.name} · status*\n${fmtDay(new Date())}\n\n${an.summary}\n\n*To do, by topic*\n${byThread(open.filter(i=>i.kind!=="risk"))}\n\n*Decided*\n${list(an.items.filter(i=>i.kind==="decision"),i=>`• ${i.text}`)}\n\n*Risks*\n${list(open.filter(i=>i.kind==="risk"),i=>`• ${i.text}`)}`;
   if (k==="plan"){ const by = {}; open.forEach(i=>{ (by[i.owner?baseName(i.owner):"Needs an owner"] ||= []).push(i); });
-    return `*Next steps · ${state.name}*\n\n` + Object.entries(by).map(([o,its])=>`*${o}*\n`+its.map(i=>`☐ ${i.text}${dueOf(i)}`).join("\n")).join("\n\n") + `\n\nReply here if anything's missing.`; }
+    return `*Next steps · ${state.name}*\n\n` + Object.entries(by).map(([o,its])=>`*${o}*\n`+list(its, i=>`☐ ${i.text}${dueOf(i)}`, 10)).join("\n\n") + `\n\nReply here if anything's missing.`; }
   const dec = an.items.filter(i=>i.kind==="decision");
-  return `Hi! A quick update on *${state.name}*.\n\n${dec.length?`Here's what we've confirmed:\n${dec.map(i=>`• ${i.text}`).join("\n")}\n\n`:""}We're working through the open items and will share progress photos as soon as the next step is done.\n\nAny questions, just reply here.`;
+  return `Hi! A quick update on *${state.name}*.\n\n${dec.length?`Here's what we've confirmed:\n${list(dec, i=>`• ${i.text}`, 8)}\n\n`:""}We're working through the open items and will share progress photos as soon as the next step is done.\n\nAny questions, just reply here.`;
 }
 function vSend(){
   return `<section class="desk"><div class="ogrid">${[["status","Team status","Everything open, grouped by topic."],["plan","Next steps","A checklist per person."],["client","Client update","Decisions and progress. Leaves out internal risks."]]
@@ -790,7 +810,7 @@ function render(animate=false){
   $("#view").innerHTML = v();
   if (!animate || STILL) document.querySelectorAll("#view .reveal").forEach(e=>e.classList.remove("reveal"));
   if (state.view==="map"){ drawMap(animate); bindPan(); drawDetail(); }
-  if (state.view==="flow") requestAnimationFrame(drawFlowArrows);
+  if (state.view==="flow") drawFlowArrows();
   document.querySelectorAll('[data-act="claude"]').forEach(b=>b.hidden=!sampleFn);
 }
 function go(view){ state.view = view; try{ history.replaceState(null,"","#"+view); }catch(e){} render(true); }
@@ -891,6 +911,9 @@ document.addEventListener("click", e=>{
   if (d.act==="unsel"){ state.sel = null; return render(); }
   if (d.act==="expand"){ state.collapsed = {}; state.foldInit = true; state.view0 = null; return render(true); }
   if (d.act==="showall"){ GROUPS.forEach(g=>state.show[g.key] = true); state.view0 = null; return render(); }
+  if (d.more){ (state.limits ||= {})[d.more] = lim(d.more) + PAGE; const y = scrollY; render(); return scrollTo(0, y); }
+  if (d.flowmore){ const k = "flow:"+d.flowmore; (state.limits ||= {})[k] = (state.limits[k] || 40) + 40; return render(); }
+  if (d.gomore){ state.layout = "list"; return go("actions"); }
   if (d.layout){ state.layout = d.layout; try{ localStorage.setItem("threadline3.layout", d.layout); }catch(e){} return render(true); }
   if (d.sort){ if (state.sort===d.sort) state.sortDir *= -1; else { state.sort = d.sort; state.sortDir = 1; } return render(); }
   if (d.act==="hidedone"){ state.hideDone = d.v==="1"; return render(); }
